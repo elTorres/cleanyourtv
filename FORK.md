@@ -9,18 +9,17 @@ Nada de lo que está aquí se envía a upstream salvo que se diga lo contrario e
 ## Procedencia
 
 | Origen | Qué se toma |
-|---|---|
+| --- | --- |
 | [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) | Todo: es la base, en el remoto `upstream` |
 | [gwiersma/cleanyourtv](https://github.com/gwiersma/cleanyourtv/blob/main/FORK.md) | Solo el commit de la fila Continue watching (lector de Watch Next, fila, interruptor `continue_watching` y `pm grant` de `READ_TV_LISTINGS`), en el remoto `gwiersma`. Su configuración de TV no se toma |
 
 ## Diferencias con upstream
 
 | Cambio | Archivos | Estado |
-|---|---|---|
+| --- | --- | --- |
 | Notas de la TCL 55C725 con el mando RC902V M1 | `examples/tcl-55c725/spain-rc902v-m1.md` | Hecho |
 | Tema aurora ajustado a esta TV: dock, etiquetas, `app_keys`, entrada de TDT | `themes/aurora/config.json` | Hecho |
-| Herramientas de agentes y OpenSpec | `.github/copilot-instructions.md`, `.github/hooks/`, `openspec/`, `CLAUDE.md` | Hecho |
-| Skills y comandos de agentes fuera de git, solo en local | `.gitignore` (`.ai/`, `.agents/`); `.claude/skills` enlaza a `.ai/skills` y tampoco se sube | Hecho |
+| Skills y comandos de agentes fuera de git, solo en local | `.gitignore` (`.ai/`, `.agents/`, `.claude/`, `.github/hooks/rtk-rewrite.json`, `.github/copilot-instructions.md`, `openspec/config.yaml`, `openspec/schemas/`) | Hecho |
 | Archivos locales de editor fuera de git | `.gitignore` (`.vscode/`, `.claude/settings.local.json`) | Hecho |
 | Fila "Seguir viendo" en Home, desactivada por defecto | `launcher/` | Pendiente |
 | Add-on con fuentes Trakt y Movistar Plus que publica en Watch Next | `addons/seguir-viendo/` | Pendiente |

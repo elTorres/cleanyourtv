@@ -18,9 +18,12 @@ bench-results/
 # editor and agent settings with personal paths stay local
 .vscode/
 .claude/
-.github/
+.github/hooks/rtk-rewrite.json
+.github/copilot-instructions.md
 .ai/
 .agents/
+openspec/config.yaml
+openspec/schemas/
 
 # Generated install bundles and JVM crash reports stay out of contributions.
 *.apk
