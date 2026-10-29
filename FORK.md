@@ -31,7 +31,7 @@ El plan completo está en `openspec/changes/seguir-viendo-fork-trakt-movistar/`.
 
 ```bash
 git remote -v
-# origin    https://github.com/<usuario>/cleanyourtv.git
+# origin    https://github.com/elTorres/cleanyourtv.git
 # upstream  https://github.com/Gathin23/cleanyourtv.git
 # gwiersma  https://github.com/gwiersma/cleanyourtv.git
 ```
