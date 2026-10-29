@@ -12,7 +12,13 @@ launcher's `continue_watching` row does (`FORK.md`). OK on a row opens Stremio.
 - **Opens the app, not itself.** Each row opens a small trampoline in this app, which starts Stremio (or shows that
   Stremio is not installed). The launcher only follows a row's link when it points at the app that published it, so
   the trampoline is what lets a row from here open Stremio.
-- **No posters yet.** Trakt has no images; until a later version adds them the launcher shows this app's banner.
+- **Next episodes too.** For each show you watched in the last 60 days and have nothing paused in, the next unwatched
+  episode gets an "up next" row.
+- **Artwork from TMDB, served locally.** Trakt has no images, so with a TMDB key the app fetches each show's or film's
+  wide backdrop once, keeps it in its cache and hands the launcher a `content://` address: the launcher, which has no
+  network access, reads the picture from this app. Without a key the launcher shows this app's banner.
+- **Straight to the episode.** In Stremio a row opens that episode's or film's page, by its IMDb id; when Trakt has no
+  IMDb id, or the app is set to Kodi, it opens the app.
 
 ## Setting it up
 
@@ -27,6 +33,9 @@ launcher's `continue_watching` row does (`FORK.md`). OK on a row opens Stremio.
    trakt.redirectUri=http://127.0.0.1
    ```
 
+   For artwork, add `tmdb.apiKey=<key>`: a TMDB account's API key or API read access token, both on
+   <https://www.themoviedb.org/settings/api>. Without it the rows have no artwork.
+
    Trakt no longer issues a client secret for new applications ("Client Secret: Not issued", PKCE): the app signs
    in with a PKCE challenge instead. Add `trakt.clientSecret=<Client Secret>` only for an older application that has
    one, and leave `trakt.redirectUri` out only if it was registered with `urn:ietf:wg:oauth:2.0:oob`.
@@ -34,6 +43,8 @@ launcher's `continue_watching` row does (`FORK.md`). OK on a row opens Stremio.
 3. Build and install (below), open **Seguir viendo**, choose **Connect Trakt** and enter the code it shows at
    <https://trakt.tv/activate> from your phone. No password is typed on the TV.
 4. Choose **Sync now**. Without the keys the app says so and the Trakt part stays off.
+5. **Open in** switches the app the rows open between Stremio and Kodi, whichever is installed. **Disconnect** signs
+   out: it deletes the Trakt tokens, this app's rows and the stored artwork, and stops the hourly sync.
 
 ## Build and install
 
@@ -51,17 +62,32 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm install -r /data/local/
 |---|---|
 | `INTERNET` | To reach `api.trakt.tv` for the sign-in and the paused items; nothing else goes online |
 | `com.android.providers.tv.permission.WRITE_EPG_DATA` | To write its own rows to the system's Watch Next table |
+| `ACCESS_NETWORK_STATE` | So the hourly sync waits until the TV has a network |
+| `RECEIVE_BOOT_COMPLETED` | To sync once when the TV starts and keep the hourly sync across restarts |
 
-No background service and no telemetry: it syncs when you press **Sync now** or right after you connect.
+It also has a read-only content provider, `io.github.eltorres.seguirviendo.posters`, that any app can read: it answers
+only to opaque image ids and returns only the artwork, so the launcher can draw it without network access.
+
+## Background work
+
+While Trakt is connected, Android's JobScheduler runs a sync about once an hour, only when there is a network, and
+once after the TV starts. Nothing runs in the foreground and there is no persistent service. It also syncs when you
+press **Sync now**, right after you connect and after you change **Open in**. No telemetry.
 
 ## What it stores on the TV
 
-The Trakt tokens, encrypted with a key held in Android Keystore, in the app's private storage, and the time of the
-last sync. Tokens never appear in logcat. Removing the app removes them; revoking the app at
+The Trakt tokens, encrypted with a key held in Android Keystore, in the app's private storage, the app chosen in
+**Open in**, the time of the last sync, and the artwork of the rows on screen in its cache (older pictures are
+deleted at each sync). Tokens never appear in logcat. Removing the app removes them; revoking the app at
 <https://trakt.tv/oauth/authorized_applications> ends the session from the Trakt side.
+
+## Credits
+
+This product uses the TMDB API but is not endorsed or certified by TMDB. Viewing data comes from Trakt.
 
 ## Tested on
 
-TCL 55C725 (Android TV 11) with this fork's launcher: Trakt connected with the device code (PKCE application, no
-client secret), three episodes paused in Stremio shown in the Continue watching row with their progress, and OK on
-a card opening Stremio.
+TCL 55C725 (Android TV 11) with this fork's launcher and Stremio 1.12.0: Trakt connected with the device code (PKCE
+application, no client secret), paused episodes and next episodes in the Continue watching row with TMDB artwork and
+their progress, OK on a card opening that episode in Stremio, a newly paused episode arriving with the scheduled sync,
+and Disconnect emptying the row and stopping the sync.

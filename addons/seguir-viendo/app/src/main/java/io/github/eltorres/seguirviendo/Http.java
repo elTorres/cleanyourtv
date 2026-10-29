@@ -19,4 +19,6 @@ interface Http {
     }
 
     Response send(String method, String url, Map<String, String> headers, String body) throws IOException;
+
+    byte[] download(String url, int maxBytes) throws IOException;
 }

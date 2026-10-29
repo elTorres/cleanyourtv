@@ -2,7 +2,7 @@
 
 Fork de [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) para una TCL 55C725 (Android TV 11) en España.
 Sigue el `main` de upstream y añade encima la configuración de esta TV, las herramientas de agentes con OpenSpec y,
-en adelante, una fila "Seguir viendo" en Home alimentada por un add-on con Trakt y Movistar Plus.
+una fila "Seguir viendo" en Home alimentada por un add-on con Trakt y Movistar Plus.
 
 Nada de lo que está aquí se envía a upstream salvo que se diga lo contrario en un PR aparte.
 
@@ -21,8 +21,10 @@ Nada de lo que está aquí se envía a upstream salvo que se diga lo contrario e
 | Tema aurora ajustado a esta TV: dock, etiquetas, `app_keys`, entrada de TDT | `themes/aurora/config.json` | Hecho |
 | Skills y comandos de agentes fuera de git, solo en local | `.gitignore` (`.ai/`, `.agents/`, `.claude/`, `.github/hooks/rtk-rewrite.json`, `.github/copilot-instructions.md`, `openspec/config.yaml`, `openspec/schemas/`) | Hecho |
 | Archivos locales de editor fuera de git | `.gitignore` (`.vscode/`, `.claude/settings.local.json`) | Hecho |
-| Fila "Seguir viendo" en Home, desactivada por defecto | `launcher/` | Pendiente |
-| Add-on con fuentes Trakt y Movistar Plus que publica en Watch Next | `addons/seguir-viendo/` | Pendiente |
+| Fila "Seguir viendo" en Home, desactivada por defecto en `config.xml`, con interruptor en los ajustes del launcher y la lista `continue_watching_apps` | `launcher/`, `docs/watch-next.md`, `docs/launcher.md` | Hecho |
+| Add-on que publica en Watch Next lo que está a medias en Trakt | `addons/seguir-viendo/` | Hecho |
+| Siguiente episodio, pósters, deep link de Stremio y sincronización automática | `addons/seguir-viendo/` | Pendiente |
+| Fuente Movistar Plus | `addons/seguir-viendo/` | Pendiente |
 
 El plan completo está en `openspec/changes/seguir-viendo-fork-trakt-movistar/`.
 

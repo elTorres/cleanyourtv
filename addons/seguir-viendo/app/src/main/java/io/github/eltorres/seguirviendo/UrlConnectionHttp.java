@@ -36,12 +36,33 @@ final class UrlConnectionHttp implements Http {
         }
     }
 
+    @Override
+    public byte[] download(String url, int maxBytes) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        try {
+            connection.setConnectTimeout(TIMEOUT_MS);
+            connection.setReadTimeout(TIMEOUT_MS);
+            int code = connection.getResponseCode();
+            if (code < 200 || code >= 300) throw new IOException("HTTP " + code);
+            return bytes(connection.getInputStream(), maxBytes);
+        } finally {
+            connection.disconnect();
+        }
+    }
+
     private static String read(InputStream stream) throws IOException {
+        return new String(bytes(stream, Integer.MAX_VALUE), StandardCharsets.UTF_8);
+    }
+
+    private static byte[] bytes(InputStream stream, int maxBytes) throws IOException {
         try (InputStream in = stream) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[8192];
-            for (int n; (n = in.read(buffer)) > 0; ) out.write(buffer, 0, n);
-            return out.toString(StandardCharsets.UTF_8.name());
+            for (int n; (n = in.read(buffer)) > 0; ) {
+                if (out.size() + n > maxBytes) throw new IOException("larger than " + maxBytes + " bytes");
+                out.write(buffer, 0, n);
+            }
+            return out.toByteArray();
         }
     }
 }

@@ -1,15 +1,19 @@
 package io.github.eltorres.seguirviendo;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.format.DateFormat;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,6 +27,9 @@ public final class MainActivity extends Activity {
     private TextView traktCode;
     private Button traktConnect;
     private Button syncNow;
+    private Button disconnect;
+    private Button target;
+    private TextView posters;
     private TextView lastSync;
     private TraktAuth.DeviceCode pending;
     private long pollIntervalMs;
@@ -36,9 +43,14 @@ public final class MainActivity extends Activity {
         traktCode = findViewById(R.id.trakt_code);
         traktConnect = findViewById(R.id.trakt_connect);
         syncNow = findViewById(R.id.sync_now);
+        disconnect = findViewById(R.id.disconnect);
+        target = findViewById(R.id.target_app);
+        posters = findViewById(R.id.posters);
         lastSync = findViewById(R.id.last_sync);
         traktConnect.setOnClickListener(v -> requestCode());
         syncNow.setOnClickListener(v -> syncAll());
+        disconnect.setOnClickListener(v -> disconnectTrakt());
+        target.setOnClickListener(v -> nextTarget());
     }
 
     @Override
@@ -66,6 +78,11 @@ public final class MainActivity extends Activity {
         traktConnect.setEnabled(state != SourceState.UNAVAILABLE);
         traktConnect.setText(state == SourceState.CONNECTED ? R.string.trakt_reconnect : R.string.trakt_connect);
         syncNow.setEnabled(state == SourceState.CONNECTED);
+        boolean signedIn = state == SourceState.CONNECTED || state == SourceState.RECONNECT_NEEDED;
+        disconnect.setVisibility(signedIn ? View.VISIBLE : View.GONE);
+        target.setText(getString(R.string.target_app, label(currentTarget())));
+        posters.setText(services.posters.available() ? R.string.posters_on : R.string.posters_off);
+        if (state == SourceState.CONNECTED) SyncScheduler.schedule(this);
         long last = services.settings.lastSyncMs();
         lastSync.setText(last == 0 ? "" : getString(R.string.last_sync,
                 DateFormat.getTimeFormat(this).format(new Date(last))));
@@ -146,6 +163,41 @@ public final class MainActivity extends Activity {
                 break;
         }
         main.postDelayed(this::poll, pollIntervalMs);
+    }
+
+    private void disconnectTrakt() {
+        disconnect.setEnabled(false);
+        worker.execute(() -> {
+            services.sources.disconnect(TraktPlayback.SOURCE_ID);
+            SyncScheduler.cancel(this);
+            services.posters.retainOnly(List.of());
+            main.post(() -> {
+                disconnect.setEnabled(true);
+                render();
+            });
+        });
+    }
+
+    private String currentTarget() {
+        return services.settings.targetPackage(TraktPlayback.SOURCE_ID);
+    }
+
+    private void nextTarget() {
+        PackageManager pm = getPackageManager();
+        String next = Trampoline.nextTarget(currentTarget(), pkg -> pm.getLeanbackLaunchIntentForPackage(pkg) != null
+                || pm.getLaunchIntentForPackage(pkg) != null);
+        services.sources.setTargetPackage(TraktPlayback.SOURCE_ID, next);
+        render();
+        if (services.traktAuth.state() == SourceState.CONNECTED) syncAll();
+    }
+
+    private String label(String pkg) {
+        try {
+            ApplicationInfo info = getPackageManager().getApplicationInfo(pkg, 0);
+            return getPackageManager().getApplicationLabel(info).toString();
+        } catch (PackageManager.NameNotFoundException e) {
+            return pkg;
+        }
     }
 
     private void syncAll() {

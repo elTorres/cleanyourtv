@@ -10,10 +10,24 @@ final class FakeHttp implements Http {
     final List<String> requests = new ArrayList<>();
     final List<String> bodies = new ArrayList<>();
     private final Deque<Response> answers = new ArrayDeque<>();
+    private final Deque<byte[]> images = new ArrayDeque<>();
 
     FakeHttp answer(int code, String body) {
         answers.add(new Response(code, body));
         return this;
+    }
+
+    FakeHttp image(byte[] bytes) {
+        images.add(bytes);
+        return this;
+    }
+
+    @Override
+    public byte[] download(String url, int maxBytes) {
+        requests.add("GET " + url);
+        byte[] next = images.poll();
+        if (next == null) throw new AssertionError("unexpected download " + url);
+        return next;
     }
 
     @Override

@@ -5,14 +5,14 @@
     "id": 1,
     "type": "episode",
     "episode": {"season": 2, "number": 6, "title": "Fishes", "runtime": 40, "ids": {"trakt": 900001}},
-    "show": {"title": "The Bear", "year": 2022, "ids": {"trakt": 800001}}
+    "show": {"title": "The Bear", "year": 2022, "ids": {"trakt": 800001, "imdb": "tt14452776", "tmdb": 136315}}
   },
   {
     "progress": 25.0,
     "paused_at": "2027-01-14T21:00:00.000Z",
     "id": 2,
     "type": "movie",
-    "movie": {"title": "Dune", "year": 2021, "ids": {"trakt": 700001}}
+    "movie": {"title": "Dune", "year": 2021, "ids": {"trakt": 700001, "imdb": "tt1160419", "tmdb": 438631}}
   },
   {
     "progress": 10.0,

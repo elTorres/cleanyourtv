@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class TraktPlaybackParserTest {
-    private static final OpenTarget STREMIO = new OpenTarget("com.stremio.one", null);
+    private static final String STREMIO = Trampoline.STREMIO;
 
     private static String fixture() throws Exception {
         return new String(Files.readAllBytes(Paths.get("src/test/resources/trakt-playback.json")),
@@ -32,6 +32,8 @@ public class TraktPlaybackParserTest {
         assertEquals("episode:900001", episode.itemKey());
         assertEquals("show:800001", episode.showKey());
         assertEquals(1_800_000_000_000L, episode.lastEngagedMs());
+        assertEquals("tmdb:tv:136315", episode.posterKey());
+        assertEquals("stremio:///detail/series/tt14452776/tt14452776:2:6", episode.target().deepLink());
     }
 
     @Test
@@ -40,6 +42,7 @@ public class TraktPlaybackParserTest {
         assertNull(movie.season());
         assertEquals("Dune", movie.title());
         assertEquals(TraktPlayback.UNKNOWN_RUNTIME_MS / 4, movie.positionMs());
+        assertEquals("tmdb:movie:438631", movie.posterKey());
     }
 
     @Test
