@@ -44,7 +44,7 @@ final class TvWatchNextStore implements WatchNextStore {
 
     private static ContentValues values(ViewingItem item) {
         ContentValues values = new ContentValues();
-        for (Map.Entry<String, Object> column : WatchNextMapper.columns(item, null).entrySet()) {
+        for (Map.Entry<String, Object> column : WatchNextMapper.columns(item, item.posterUri()).entrySet()) {
             Object value = column.getValue();
             if (value instanceof Integer) values.put(column.getKey(), (Integer) value);
             else if (value instanceof Long) values.put(column.getKey(), (Long) value);

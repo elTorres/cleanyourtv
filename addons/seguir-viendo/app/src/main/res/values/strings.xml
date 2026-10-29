@@ -14,4 +14,8 @@
     <string name="last_sync">Last sync: %1$s</string>
     <string name="network_error">Could not reach the service. Check the network.</string>
     <string name="target_missing">%1$s is not installed</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="target_app">Open in: %1$s</string>
+    <string name="posters_on">Artwork from TMDB</string>
+    <string name="posters_off">No artwork: add tmdb.apiKey to local.properties</string>
 </resources>

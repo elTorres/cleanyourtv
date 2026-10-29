@@ -12,4 +12,8 @@
     <string name="last_sync">Última sincronización: %1$s</string>
     <string name="network_error">No se ha podido contactar con el servicio. Revisa la red.</string>
     <string name="target_missing">%1$s no está instalada</string>
+    <string name="disconnect">Desconectar</string>
+    <string name="target_app">Abrir en: %1$s</string>
+    <string name="posters_on">Carátulas de TMDB</string>
+    <string name="posters_off">Sin carátulas: falta tmdb.apiKey en local.properties</string>
 </resources>

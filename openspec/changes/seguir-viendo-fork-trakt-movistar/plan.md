@@ -16,7 +16,7 @@ implemented_by:
     name: "Claude Opus"
     version: "5.5"
     reasoning_effort: "low"
-last_implementation_at: "2026-10-29T20:45:00Z"
+last_implementation_at: "2026-10-29T21:30:00Z"
 ---
 
 # Seguir viendo en Home con Trakt y Movistar Plus
@@ -28,7 +28,7 @@ Ver en Home lo que la persona tiene a medias en Stremio, en Kodi de otro disposi
 ## Decisiones
 
 - Fork de GitHub de `Gathin23/cleanyourtv` en la cuenta del usuario. Remotos: `origin` apunta al fork, `upstream` a Gathin23 y `gwiersma` se usa solo para leer y hacer cherry-pick (en lugar de clonar el fork de gwiersma, que arrastraría su configuración de TV).
-- Los cambios personales se pasan al fork así: los commits `dd416ccb` (TCL C725 y tema aurora) y `d5933b95` (dock y `app_keys` de aurora) se rebasan sobre `upstream/main`. Los archivos de herramientas sin seguimiento (`.agents/`, `.ai/`, `.claude/`, `.github/copilot-instructions.md`, `.github/hooks/`, `openspec/` y los cambios de `CLAUDE.md`) van en un commit propio, sin `.claude/settings.local.json` ni otros archivos con rutas, tokens o datos de la casa.
+- Los cambios personales se pasan al fork así: los commits `dd416ccb` (TCL C725 y tema aurora) y `d5933b95` (dock y `app_keys` de aurora) se rebasan sobre `upstream/main` (ahora `23fd3f23` y `e87c4925`). Los archivos de herramientas de agentes (`.agents/`, `.ai/`, `.claude/`, `.github/copilot-instructions.md`, `.github/hooks/rtk-rewrite.json`, `openspec/config.yaml` y `openspec/schemas/`) se quedan solo en local, ignorados por git; en el fork se suben `CLAUDE.md` y los cambios de `openspec/changes/` (en lugar de un commit con todas las herramientas, que habría publicado configuración personal). Los que llegaron a subirse se quitaron reescribiendo el historial con `--force-with-lease`.
 - El fork es público, como todo fork de un repo público. Antes del primer push se revisan los archivos personales en busca de IP, nombres de Wi-Fi, números de serie o `greeting_name`, como pide `AGENTS.md`.
 - De gwiersma se integra solo el commit de la funcionalidad (`d723b1f`): el lector de Watch Next, la fila, el interruptor `continue_watching` y el `pm grant` de `READ_TV_LISTINGS` en `launcher/build-and-install.sh`. No se integra su commit de configuración de TV.
 - El enganche en `MainActivity.java` se reduce al mínimo y el resto vive en clases propias. `MainActivity` tuvo 311 commits upstream en un mes, así que cada línea que se toca en ese archivo es un conflicto futuro.
@@ -43,7 +43,10 @@ Ver en Home lo que la persona tiene a medias en Stremio, en Kodi de otro disposi
 - Trakt no da imágenes, así que los pósters se obtienen de TMDB con los ids que devuelve Trakt. Sin `tmdb.apiKey` la fila no lleva póster y el launcher pinta el banner.
 - Los pósters se guardan en la caché del add-on y se sirven con un provider exportado de solo lectura que responde únicamente a ids opacos de imagen. No expone títulos ni tokens.
 - La sincronización usa `JobScheduler`, con un trabajo periódico de 1 h con red requerida, `BOOT_COMPLETED` y el botón "Sincronizar ahora". No hay servicio en primer plano. El README del add-on lo declara.
-- Los elementos de Trakt (que incluyen la actividad de Kodi en otro dispositivo) se abren en Stremio por defecto. El deep link `stremio:///detail/...` se verifica en la TV y, si no funciona, se abre la app.
+- Los elementos de Trakt (que incluyen la actividad de Kodi en otro dispositivo) se abren en Stremio por defecto, o en Kodi (`org.xbmc.kodi`, instalado en la TV) si se elige en "Abrir en". Stremio 1.12.0 en la TV declara `stremio:///detail/{tipo}/{id}` y `stremio:///detail/{tipo}/{id}/{vídeo}`, y abre la ficha con sus fuentes: `stremio:///detail/series/tt…/tt…:T:E` por episodio y `stremio:///detail/movie/tt…` por película, con el id de IMDb que da Trakt. Sin id de IMDb, o con Kodi, se abre la app.
+- Las tarjetas de la fila son 16:9 y se recortan al centro, así que de TMDB se toma la imagen de fondo apaisada (`backdrop_path`, a 300 px de ancho) y el póster vertical solo si no hay fondo. La clave admite la API key (va en la URL) o el token de lectura (va en la cabecera `Authorization`).
+- Los siguientes episodios salen de las series vistas en los últimos 60 días (como mucho 10, las más recientes) que no tengan ya un elemento a medias, para no pedir a Trakt el progreso de las que se descartarían.
+- El id de cada imagen es un SHA-256 truncado de su referencia (`tmdb:tv:<id>`), así que se reutiliza entre sincronizaciones sin volver a descargarla. Los pósters huérfanos se borran solo cuando todas las fuentes conectadas se han actualizado, para no borrar los de una fuente que ha fallado y conserva sus filas.
 - Movistar Plus usa la API no oficial descrita en `Paco8/plugin.video.movistarplus` (GPL-2.0). Ese plugin sirve solo como referencia del protocolo: no se copia ni se traduce su código, para que el add-on pueda seguir con licencia MIT.
 - Antes de implementar Movistar Plus se hace un spike para responder tres preguntas: si leer `viewings` exige registrar un dispositivo, si hay `refresh_token` y qué deep link acepta la app oficial. La clave solo se guarda (cifrada) si no hay forma de renovar la sesión sin ella.
 - Fuera del alcance: el "reproduciendo ahora" por MediaSession o `ContentPlaying`, hacer scrobbling de Movistar a Trakt, leer el canal de preview de Stremio, abrir un issue o PR en Gathin23 o una fila en su `SHOWCASE.md`, workflows de CI de releases y cualquier cambio en el guard de Home o en las reglas de seguridad.
@@ -57,7 +60,7 @@ Repositorio fork operativo, al día con upstream y con los cambios personales en
 - [x] Crear el fork de `Gathin23/cleanyourtv` en GitHub y reconfigurar los remotos del clon local: `origin` al fork, `upstream` a Gathin23 y añadir `gwiersma` (`https://github.com/gwiersma/cleanyourtv`).
 - [x] Rebasar `dd416ccb` y `d5933b95` sobre `upstream/main`, resolviendo conflictos en `themes/aurora/config.json`.
 - [x] Revisar `examples/tcl-55c725/spain-rc902v-m1.md`, `themes/aurora/config.json`, `.vscode/settings.json` y los archivos de herramientas en busca de identificadores (IP, Wi-Fi, serie, `greeting_name`, rutas personales, tokens) y eliminarlos o generalizarlos.
-- [x] Añadir a `.gitignore` los archivos locales de herramientas que no deben subirse (como `.claude/settings.local.json`) y crear un commit con `.agents/`, `.ai/`, `.claude/`, `.github/copilot-instructions.md`, `.github/hooks/`, `openspec/` y `CLAUDE.md`, que debe seguir importando `@AGENTS.md` (`tests/test_agents_md.py`). Por decisión del usuario, `.ai/` y `.agents/` quedan ignorados y solo en local, y `.claude/` (un enlace a `.ai/skills`) tampoco se sube.
+- [x] Añadir a `.gitignore` los archivos locales de herramientas que no deben subirse (como `.claude/settings.local.json`) y crear un commit con `.agents/`, `.ai/`, `.claude/`, `.github/copilot-instructions.md`, `.github/hooks/`, `openspec/` y `CLAUDE.md`, que debe seguir importando `@AGENTS.md` (`tests/test_agents_md.py`). Por decisión del usuario, `.ai/` y `.agents/` quedan ignorados y solo en local, y `.claude/` (un enlace a `.ai/skills`) tampoco se sube; después se sacaron también del historial `.github/copilot-instructions.md`, `.github/hooks/rtk-rewrite.json`, `openspec/config.yaml` y `openspec/schemas/`.
 - [x] Añadir `FORK.md` con la procedencia (Gathin23 y gwiersma), el procedimiento de rebase sobre `upstream/main` y la lista de diferencias, siguiendo la forma del `FORK.md` de gwiersma.
 - [x] Hacer push de `main` al fork.
 - [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
@@ -162,18 +165,22 @@ La fila muestra también el siguiente episodio de cada serie, con carátulas rea
 
 ```java
 // Puertos (add-on)
-interface PosterStore { String put(byte[] image, String mimeType); void retainOnly(Set<String> posterKeys); }
+interface PosterStore { String uriFor(String posterKey); String put(String posterKey, byte[] image) throws IOException; void retainOnly(Set<String> posterKeys); }
 interface ArtworkLookup { byte[] poster(String tmdbId, String type) throws IOException; }
+interface Targets { String targetPackage(String sourceId); void setTargetPackage(String sourceId, String packageName); }
 
 // Servicios de aplicación (add-on)
-final class SyncScheduler { static void schedule(Context context); static void cancel(Context context); }
+final class Posters { List<ViewingItem> attach(List<ViewingItem> items); void retainOnly(Collection<ViewingItem> published); }
+final class SyncScheduler { static void schedule(Context context); static void syncSoon(Context context); static void cancel(Context context); }
 final class SourcesService { void disconnect(String sourceId); void setTargetPackage(String sourceId, String packageName); }
 ```
 
 ```xml
 <!-- Textos de interfaz de usuario (add-on, res/values-es) -->
 <string name="disconnect">Desconectar</string>
-<string name="target_app">Abrir en</string>
+<string name="target_app">Abrir en: %1$s</string>
+<string name="posters_on">Carátulas de TMDB</string>
+<string name="posters_off">Sin carátulas: falta tmdb.apiKey en local.properties</string>
 <string name="reconnect_needed">Vuelve a conectar la cuenta</string>
 ```
 
@@ -185,19 +192,28 @@ final class SourcesService { void disconnect(String sourceId); void setTargetPac
 - `addons/seguir-viendo/app/src/test/.../PosterStoreTest`
   - storedPosterIsServedAsContentUri (Póster descargado)
   - missingArtworkPublishesWithoutPoster (Sin imagen)
+  - orphanPostersAreRemoved (Sustitución por fuente)
 - `addons/seguir-viendo/app/src/test/.../SourcesServiceTest`
   - disconnectRemovesSecretsAndRows (Desconectar)
+  - targetChoiceIsKeptPerSource (App de destino configurable)
 - `addons/seguir-viendo/app/src/test/.../SyncSchedulerTest`
   - periodicJobRequiresNetwork (Sin red)
 - `addons/seguir-viendo/app/src/test/.../StremioLinkTest`
   - buildsEpisodeDeepLink (Contenido abrible)
+  - linksOnlyForStremio (Destino por defecto)
+- `addons/seguir-viendo/app/src/test/.../TmdbArtworkTest`
+  - prefersTheWideBackdropForTheRowCard (Póster descargado)
+  - readAccessTokenGoesInTheHeaderNotTheUrl (Credenciales protegidas)
+  - unknownShowHasNoArtwork (Sin imagen)
+- `addons/seguir-viendo/app/src/test/.../TrampolineTest`
+  - cyclesThroughInstalledTargets (App de destino configurable)
 
-- [ ] Ampliar `TraktSource` con elementos `NEXT` a partir de `/sync/watched/shows` y `/shows/{id}/progress/watched`, limitado a las series con actividad en los últimos 60 días.
-- [ ] Implementar `ArtworkLookup` con TMDB y `PosterStore` con un provider exportado de solo lectura por id opaco. Limpiar los pósters huérfanos en cada sincronización.
-- [ ] Verificar en la TV el formato del deep link de Stremio por episodio y por película, e implementar `StremioLink` con vuelta a abrir la app si falla.
-- [ ] Implementar `SyncScheduler` (trabajo periódico de 1 h con red, receptor de `BOOT_COMPLETED`) y la desconexión, junto con la elección de la app de destino en la configuración.
-- [ ] Probar en la TV: terminar un episodio en Stremio y ver el siguiente en la fila con póster. Pausar en Kodi del otro dispositivo y ver la entrada tras la sincronización automática. Desconectar y comprobar que la fila queda vacía.
-- [ ] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
+- [x] Ampliar `TraktSource` con elementos `NEXT` a partir de `/sync/watched/shows` y `/shows/{id}/progress/watched`, limitado a las series con actividad en los últimos 60 días.
+- [x] Implementar `ArtworkLookup` con TMDB y `PosterStore` con un provider exportado de solo lectura por id opaco. Limpiar los pósters huérfanos en cada sincronización.
+- [x] Verificar en la TV el formato del deep link de Stremio por episodio y por película, e implementar `StremioLink` con vuelta a abrir la app si falla. Verificado con Stremio 1.12.0 (Sherlock T1·E1 y una película): los dos abren la ficha.
+- [x] Implementar `SyncScheduler` (trabajo periódico de 1 h con red, receptor de `BOOT_COMPLETED`) y la desconexión, junto con la elección de la app de destino en la configuración (Stremio o Kodi). Añade los permisos `RECEIVE_BOOT_COMPLETED` y `ACCESS_NETWORK_STATE`, declarados en el README del add-on.
+- [x] Probar en la TV: terminar un episodio en Stremio y ver el siguiente en la fila con póster. Pausar en Kodi del otro dispositivo y ver la entrada tras la sincronización automática. Desconectar y comprobar que la fila queda vacía. Hecho en la TCL C725: los siguientes episodios salen del historial real de Trakt (Family Guy, Lupin, MobLand, Tulsa King) con carátula, OK abre el episodio en Stremio, un episodio recién pausado (Person of Interest T1·E1) llega con el trabajo programado (forzado con `cmd jobscheduler run`) y Desconectar deja la fila vacía y cancela el trabajo; al reconectar vuelven las filas y el trabajo. En la prueba los botones del add-on no mostraban el foco con el mando; ahora el enfocado se ve en blanco.
+- [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
 
 ### Fase 3: Fuente Movistar Plus
 
@@ -241,4 +257,4 @@ final class MovistarSource implements ViewingSource { }
 
 ## Siguiente paso
 
-Ejecuta `/openspec-apply-change` para implementar la Fase 2: siguiente episodio, pósters de TMDB, deep link de Stremio y sincronización automática.
+Ejecuta `/openspec-apply-change` para implementar la Fase 3: la fuente Movistar Plus, empezando por el spike en la TV con la cuenta real (registro de dispositivo, renovación del token y deep link de la app oficial).

@@ -14,10 +14,18 @@ final class ViewingItem {
     private final long lastEngagedMs;
     private final String posterKey;
     private final OpenTarget target;
+    private final String posterUri;
 
     ViewingItem(String sourceId, String itemKey, String showKey, ViewingKind kind, String title, String episodeTitle,
                 Integer season, Integer episode, long positionMs, long durationMs, long lastEngagedMs,
                 String posterKey, OpenTarget target) {
+        this(sourceId, itemKey, showKey, kind, title, episodeTitle, season, episode, positionMs, durationMs,
+                lastEngagedMs, posterKey, target, null);
+    }
+
+    private ViewingItem(String sourceId, String itemKey, String showKey, ViewingKind kind, String title,
+                        String episodeTitle, Integer season, Integer episode, long positionMs, long durationMs,
+                        long lastEngagedMs, String posterKey, OpenTarget target, String posterUri) {
         this.sourceId = sourceId;
         this.itemKey = itemKey;
         this.showKey = showKey;
@@ -31,6 +39,12 @@ final class ViewingItem {
         this.lastEngagedMs = lastEngagedMs;
         this.posterKey = posterKey;
         this.target = target;
+        this.posterUri = posterUri;
+    }
+
+    ViewingItem withPosterUri(String uri) {
+        return new ViewingItem(sourceId, itemKey, showKey, kind, title, episodeTitle, season, episode, positionMs,
+                durationMs, lastEngagedMs, posterKey, target, uri);
     }
 
     String sourceId() { return sourceId; }
@@ -58,6 +72,8 @@ final class ViewingItem {
     String posterKey() { return posterKey; }
 
     OpenTarget target() { return target; }
+
+    String posterUri() { return posterUri; }
 
     boolean isEpisode() { return season != null && episode != null; }
 }

@@ -22,4 +22,11 @@ public class TrampolineTest {
     public void reportsMissingTargetApp() {
         assertEquals(Trampoline.Action.MISSING, Trampoline.choose(false, false));
     }
+
+    @Test
+    public void cyclesThroughInstalledTargets() {
+        assertEquals(Trampoline.KODI, Trampoline.nextTarget(Trampoline.STREMIO, pkg -> true));
+        assertEquals(Trampoline.STREMIO, Trampoline.nextTarget(Trampoline.KODI, pkg -> true));
+        assertEquals(Trampoline.STREMIO, Trampoline.nextTarget(Trampoline.STREMIO, Trampoline.STREMIO::equals));
+    }
 }
