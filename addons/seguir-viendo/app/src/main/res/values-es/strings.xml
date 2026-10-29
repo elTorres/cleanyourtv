@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trakt_connect">Conectar Trakt</string>
+    <string name="trakt_reconnect">Volver a conectar</string>
+    <string name="trakt_code">Entra en %1$s e introduce %2$s</string>
+    <string name="trakt_expired">El código ha caducado. Pide uno nuevo.</string>
+    <string name="trakt_unavailable">Falta trakt.clientId en local.properties; añádelo y vuelve a compilar</string>
+    <string name="state_connected">Conectado</string>
+    <string name="state_disconnected">Sin conectar</string>
+    <string name="reconnect_needed">Vuelve a conectar la cuenta</string>
+    <string name="sync_now">Sincronizar ahora</string>
+    <string name="last_sync">Última sincronización: %1$s</string>
+    <string name="network_error">No se ha podido contactar con el servicio. Revisa la red.</string>
+    <string name="target_missing">%1$s no está instalada</string>
+</resources>

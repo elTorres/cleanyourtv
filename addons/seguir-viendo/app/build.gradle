@@ -1,0 +1,52 @@
+plugins {
+    id 'com.android.application'
+}
+
+// The Trakt app's id and secret, and an optional TMDB key, from addons/seguir-viendo/local.properties (git ignores it).
+def localProperties = new Properties()
+def localFile = rootProject.file('local.properties')
+if (localFile.isFile()) localFile.withInputStream { localProperties.load(it) }
+def local = { String key -> (localProperties.getProperty(key) ?: '').replace('\\', '\\\\').replace('"', '\\"') }
+
+android {
+    namespace 'io.github.eltorres.seguirviendo'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.eltorres.seguirviendo'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        buildConfigField 'String', 'TRAKT_CLIENT_ID', "\"${local('trakt.clientId')}\""
+        buildConfigField 'String', 'TRAKT_CLIENT_SECRET', "\"${local('trakt.clientSecret')}\""
+        buildConfigField 'String', 'TRAKT_REDIRECT_URI', "\"${local('trakt.redirectUri') ?: 'urn:ietf:wg:oauth:2.0:oob'}\""
+        buildConfigField 'String', 'TMDB_API_KEY', "\"${local('tmdb.apiKey')}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            // Sideloaded over ADB like the launcher: signed with the debug key. Sign your own releases with your key.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Test only (never in the APK): plain JVM tests for the Trakt client, the mapping and the sync, src/test.
+    testImplementation 'junit:junit:4.13.2'
+    // Android's own org.json, which the JVM tests cannot reach through android.jar's stubs.
+    testImplementation 'org.json:json:20231013'
+}

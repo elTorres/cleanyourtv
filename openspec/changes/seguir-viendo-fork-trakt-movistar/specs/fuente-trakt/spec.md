@@ -14,7 +14,7 @@ El sistema SHALL conectar la cuenta de Trakt mostrando en la TV un código y la 
 - Given un código mostrado, when caduca sin activarse, then el add-on lo indica y ofrece pedir uno nuevo
 
 ### Requirement: Credenciales de la aplicación en la compilación
-El sistema SHALL tomar el identificador y el secreto de la aplicación de Trakt de la configuración local de compilación, que no se versiona, y SHALL desactivar la fuente Trakt cuando falten.
+El sistema SHALL tomar el identificador, la URL de redirección y, si existe, el secreto de la aplicación de Trakt de la configuración local de compilación, que no se versiona; SHALL funcionar sin secreto, como las aplicaciones PKCE que Trakt crea ahora, y SHALL desactivar la fuente Trakt cuando falte el identificador.
 
 #### Scenario: Compilación sin credenciales
 - Given una compilación sin identificador de Trakt, when la persona abre el add-on, then la fuente Trakt aparece como no disponible con un mensaje que explica cómo configurarla
