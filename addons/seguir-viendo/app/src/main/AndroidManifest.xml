@@ -6,10 +6,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <queries>
         <package android:name="com.stremio.one" />
         <package android:name="com.movistarplus.androidtv" />
+        <package android:name="org.xbmc.kodi" />
     </queries>
 
     <application
@@ -36,5 +39,23 @@
             android:exported="true"
             android:screenOrientation="landscape"
             android:taskAffinity="" />
+
+        <service
+            android:name=".SyncJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name=".PosterProvider"
+            android:authorities="io.github.eltorres.seguirviendo.posters"
+            android:exported="true" />
     </application>
 </manifest>

@@ -1,0 +1,17 @@
+[
+  {
+    "plays": 14,
+    "last_watched_at": "2027-01-15T07:00:00.000Z",
+    "show": {"title": "The Bear", "year": 2022, "ids": {"trakt": 800001, "imdb": "tt14452776", "tmdb": 136315}}
+  },
+  {
+    "plays": 6,
+    "last_watched_at": "2027-01-12T22:00:00.000Z",
+    "show": {"title": "Severance", "year": 2022, "ids": {"trakt": 800002, "imdb": "tt11280740", "tmdb": 95396}}
+  },
+  {
+    "plays": 30,
+    "last_watched_at": "2026-09-01T22:00:00.000Z",
+    "show": {"title": "Dark", "year": 2017, "ids": {"trakt": 800003, "imdb": "tt5753856", "tmdb": 70523}}
+  }
+]
