@@ -1,4 +1,30 @@
 {
+  "dock_apps": [
+    "com.tcl.tv",
+    "com.movistarplus.androidtv",
+    "com.stremio.one",
+    "com.fctv77.tv",
+    "com.dazn",
+    "com.bone.android.a4v.oficial",
+    "org.smarttube.stable"
+  ],
+  "columns": 6,
+  "rows_below_dock": 0,
   "background_color": "#070A14",
-  "wallpaper": true
+  "wallpaper": true,
+  "live_tv_package": "com.tcl.tv",
+  "live_tv_input_id": "com.tcl.tvinput/.TDTVInputService/HW1413742848",
+  "settings_key_keycodes": [4077],
+  "consume_volume_keys": true,
+  "app_keys": [
+    "4062:com.movistarplus.androidtv",
+    "4099:com.stremio.one",
+    "4140:com.nordvpn.android",
+    "4057:input:com.tcl.tvinput/.passthroughinput.TvPassThroughService/HW1413744384",
+    "4065:org.smarttube.stable",
+    "4020:guide:com.tcl.tv",
+    "4001:input:com.tcl.tvinput/.TDTVInputService/HW1413742848",
+    "hold:4001:com.tcl.tv/com.tcl.dtv.manage.newguide.activity.EpgActivity",
+    "4137"
+  ]
 }
