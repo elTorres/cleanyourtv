@@ -63,6 +63,8 @@ The launcher's own page has these rows, top to bottom:
   time Home comes up after the TV starts. Once per boot, so Home and Back still reach the launcher.
 - **Follow theme (reset on-TV choices)**, which clears every choice above. Pushing or resetting a theme
   clears them too.
+- **Continue watching** on or off: the row of Watch Next titles above the dock ([watch-next.md](watch-next.md)).
+  It starts from `continue_watching` in `config.xml` (off), and neither Follow theme nor a theme push changes it.
 - **Choose default home** opens Android's home picker, and **TV system settings** the TV's own settings
   page.
 

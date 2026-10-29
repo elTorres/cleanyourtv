@@ -37,6 +37,7 @@
     <string name="shamsi_month_bahman">בהמן</string>
     <string name="shamsi_month_esfand">אספנד</string>
     <string name="stats_cpu">מעבד %1$d%%</string>
+    <string name="continue_watching">המשך צפייה</string>
     <string name="stats_memory">זיכרון %1$d / %2$d MB</string>
     <string name="stats_storage">אחסון %1$s פנוי</string>
     <string name="storage_gb_whole">%1$.0f GB</string>
@@ -51,6 +52,7 @@
     <string name="columns_label">אפליקציות בשורה</string>
     <string name="dock_opacity_label">עוצמת הרקע בשורת המועדפים</string>
     <string name="animations_state">הנפשות: %1$s</string>
+    <string name="continue_watching_state">המשך צפייה: %1$s</string>
     <string name="advanced_effects">אפקטים מתקדמים</string>
     <string name="advanced_effects_state">אפקטים מתקדמים: %1$s</string>
     <string name="open_on_start_label">פתיחה בהפעלה</string>

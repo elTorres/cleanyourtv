@@ -24,6 +24,7 @@
     <string name="cant_open">No se puede abrir %1$s</string>
     <string name="date_format">EEEE d \'de\' MMMM</string>
     <string name="date_format_home">EEEE\nd \'de\' MMMM</string>
+    <string name="continue_watching">Seguir viendo</string>
     <string name="shamsi_month_farvardin">Farvardin</string>
     <string name="shamsi_month_ordibehesht">Ordibehesht</string>
     <string name="shamsi_month_khordad">Khordad</string>
@@ -47,6 +48,7 @@
     <string name="columns_label">Aplicaciones por fila</string>
     <string name="dock_opacity_label">Opacidad de la barra del dock</string>
     <string name="animations_state">Animaciones: %1$s</string>
+    <string name="continue_watching_state">Seguir viendo: %1$s</string>
     <string name="advanced_effects">Efectos avanzados</string>
     <string name="advanced_effects_state">Efectos avanzados: %1$s</string>
     <string name="open_on_start_label">Abrir al iniciar</string>

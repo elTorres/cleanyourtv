@@ -5,13 +5,22 @@ Mostrar en la pantalla de inicio del launcher una fila "Seguir viendo" con lo qu
 ## ADDED Requirements
 
 ### Requirement: Fila desactivada por defecto
-El sistema SHALL mostrar la fila "Seguir viendo" solo cuando el interruptor `continue_watching` esté activado en `config.xml` o en el tema, y SHALL comportarse como el launcher original cuando esté desactivado.
+El sistema SHALL tomar de `continue_watching` en `config.xml` el valor por defecto de la fila "Seguir viendo", desactivado, y SHALL comportarse como el launcher original mientras esté desactivada.
 
 #### Scenario: Interruptor desactivado
-- Given `continue_watching` desactivado, when la persona vuelve a Home, then no aparece ninguna fila nueva y el dock y el reloj ocupan su sitio habitual
+- Given `continue_watching` desactivado en `config.xml` y ninguna elección en la TV, when la persona vuelve a Home, then no aparece ninguna fila nueva y el dock y el reloj ocupan su sitio habitual
 
-#### Scenario: Interruptor activado
-- Given `continue_watching` activado y filas publicadas en Watch Next, when la persona vuelve a Home, then aparece la fila "Seguir viendo" entre el reloj y el dock
+### Requirement: Interruptor en los ajustes del launcher
+El sistema SHALL ofrecer en los ajustes del launcher un interruptor "Seguir viendo" que active o desactive la fila en la TV sin reinstalar, cuya elección prevalece sobre `config.xml` y se conserva al cambiar de tema.
+
+#### Scenario: Activar desde los ajustes
+- Given la fila desactivada y filas publicadas en Watch Next, when la persona activa "Seguir viendo" en los ajustes del launcher y vuelve a Home, then aparece la fila "Seguir viendo" entre el reloj y el dock
+
+#### Scenario: Desactivar desde los ajustes
+- Given la fila visible, when la persona desactiva "Seguir viendo" en los ajustes del launcher y vuelve a Home, then la fila desaparece
+
+#### Scenario: Cambio de tema
+- Given "Seguir viendo" activado en los ajustes, when se envía otro tema a la TV, then la fila sigue activada
 
 ### Requirement: Lectura al volver a Home
 El sistema SHALL leer la tabla Watch Next cada vez que Home vuelve a primer plano y SHALL NOT consultarla con temporizadores ni servicios en segundo plano.
@@ -27,6 +36,15 @@ El sistema SHALL ocultar la fila cuando no tenga concedido el permiso de lectura
 
 #### Scenario: Tabla vacía
 - Given ninguna app ha publicado filas visibles, when la persona vuelve a Home, then la fila no aparece
+
+### Requirement: Apps permitidas
+El sistema SHALL mostrar solo las entradas publicadas por las apps de la lista `continue_watching_apps` de `config.xml` cuando la lista no esté vacía, y las de todas las apps cuando esté vacía.
+
+#### Scenario: Publicidad de otra app
+- Given `continue_watching_apps` con solo el add-on y una app del firmware que publica entradas más recientes, when se construye la fila, then solo aparecen las entradas del add-on
+
+#### Scenario: Lista vacía
+- Given `continue_watching_apps` vacía, when se construye la fila, then aparecen las entradas de todas las apps
 
 ### Requirement: Filtrado y orden de entradas
 El sistema SHALL mostrar como máximo diez entradas, una por serie o película, ordenadas de la más reciente a la más antigua, y SHALL descartar las entradas sin actividad en los últimos 60 días y las de tipo "continuar" con más del 95 % visto.

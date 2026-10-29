@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Seguir viendo</string>
+    <string name="trakt" translatable="false">Trakt</string>
+    <string name="trakt_connect">Connect Trakt</string>
+    <string name="trakt_reconnect">Connect again</string>
+    <string name="trakt_code">Go to %1$s and enter %2$s</string>
+    <string name="trakt_expired">The code has expired. Ask for a new one.</string>
+    <string name="trakt_unavailable">Add trakt.clientId to local.properties and build again</string>
+    <string name="state_connected">Connected</string>
+    <string name="state_disconnected">Not connected</string>
+    <string name="reconnect_needed">Connect the account again</string>
+    <string name="sync_now">Sync now</string>
+    <string name="last_sync">Last sync: %1$s</string>
+    <string name="network_error">Could not reach the service. Check the network.</string>
+    <string name="target_missing">%1$s is not installed</string>
+</resources>

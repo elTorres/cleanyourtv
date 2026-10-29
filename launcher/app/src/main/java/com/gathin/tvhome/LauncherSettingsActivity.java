@@ -34,6 +34,7 @@ public final class LauncherSettingsActivity extends Activity {
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
     private TextView wallpaperChoice;
     private TextView animationsChoice;
+    private TextView continueWatchingChoice;
     private TextView advancedChoice;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
@@ -114,6 +115,12 @@ public final class LauncherSettingsActivity extends Activity {
             if (!animations) advancedEffects = false;
             choices.edit().putBoolean("animations", animations)
                     .putBoolean("advanced_effects", advancedEffects).apply();
+            changed();
+            refresh();
+        });
+        continueWatchingChoice = findViewById(R.id.continueWatchingChoice);
+        continueWatchingChoice.setOnClickListener(v -> {
+            choices.edit().putBoolean(ContinueWatching.CHOICE_KEY, !ContinueWatching.enabled(this)).apply();
             changed();
             refresh();
         });
@@ -288,6 +295,8 @@ public final class LauncherSettingsActivity extends Activity {
         }
         animationsChoice.setText(getString(R.string.animations_state,
                 getString(animations ? R.string.on : R.string.off)));
+        continueWatchingChoice.setText(getString(R.string.continue_watching_state,
+                getString(ContinueWatching.enabled(this) ? R.string.on : R.string.off)));
         advancedChoice.setText(getString(R.string.advanced_effects_state,
                 getString(advancedEffects ? R.string.on : R.string.off)));
         advancedChoice.setEnabled(animations);
