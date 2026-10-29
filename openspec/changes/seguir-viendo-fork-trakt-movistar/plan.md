@@ -51,12 +51,12 @@ Ver en Home lo que la persona tiene a medias en Stremio, en Kodi de otro disposi
 
 Repositorio fork operativo, al día con upstream y con los cambios personales encima, con las pruebas del repo pasando.
 
-- [ ] Crear el fork de `Gathin23/cleanyourtv` en GitHub y reconfigurar los remotos del clon local: `origin` al fork, `upstream` a Gathin23 y añadir `gwiersma` (`https://github.com/gwiersma/cleanyourtv`).
+- [x] Crear el fork de `Gathin23/cleanyourtv` en GitHub y reconfigurar los remotos del clon local: `origin` al fork, `upstream` a Gathin23 y añadir `gwiersma` (`https://github.com/gwiersma/cleanyourtv`).
 - [x] Rebasar `dd416ccb` y `d5933b95` sobre `upstream/main`, resolviendo conflictos en `themes/aurora/config.json`.
 - [x] Revisar `examples/tcl-55c725/spain-rc902v-m1.md`, `themes/aurora/config.json`, `.vscode/settings.json` y los archivos de herramientas en busca de identificadores (IP, Wi-Fi, serie, `greeting_name`, rutas personales, tokens) y eliminarlos o generalizarlos.
 - [x] Añadir a `.gitignore` los archivos locales de herramientas que no deben subirse (como `.claude/settings.local.json`) y crear un commit con `.agents/`, `.ai/`, `.claude/`, `.github/copilot-instructions.md`, `.github/hooks/`, `openspec/` y `CLAUDE.md`, que debe seguir importando `@AGENTS.md` (`tests/test_agents_md.py`). Por decisión del usuario, `.ai/` y `.agents/` quedan ignorados y solo en local, y `.claude/` (un enlace a `.ai/skills`) tampoco se sube.
 - [x] Añadir `FORK.md` con la procedencia (Gathin23 y gwiersma), el procedimiento de rebase sobre `upstream/main` y la lista de diferencias, siguiendo la forma del `FORK.md` de gwiersma.
-- [ ] Hacer push de `main` al fork.
+- [x] Hacer push de `main` al fork.
 - [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
 
 ### Fase 1: Fila Seguir viendo con lo que está a medias en Trakt
@@ -232,4 +232,4 @@ final class MovistarSource implements ViewingSource { }
 
 ## Siguiente paso
 
-Completa las tareas pendientes de la Fase 0 (crear el fork en GitHub, reconfigurar los remotos y hacer push de `main`). Después ejecuta `/openspec-apply-change` para implementar la Fase 1.
+Ejecuta `/openspec-apply-change` para implementar la Fase 1.
