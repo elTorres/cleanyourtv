@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.media.tv.TvContract;
 import android.net.Uri;
 import android.util.Log;
@@ -286,10 +287,11 @@ final class ContinueWatching {
         return count == 0 ? -1 : Math.max(0, Math.min(lastIndex, count - 1));
     }
 
-    static Intent optionsIntent(Context context, Item item) {
+    static Intent optionsIntent(Context context, Item item, Rect cardBounds) {
         if (item.programId < 0) return null;
         Intent i = new Intent(OPTIONS_ACTION).setPackage(item.pkg).putExtra(EXTRA_PROGRAM_ID, item.programId);
         if (i.resolveActivity(context.getPackageManager()) == null) return null;
+        i.setSourceBounds(cardBounds);
         return i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 

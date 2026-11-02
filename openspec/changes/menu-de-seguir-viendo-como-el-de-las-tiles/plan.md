@@ -16,7 +16,7 @@ implemented_by:
     name: "Claude Opus"
     version: "5.5"
     reasoning_effort: "low"
-last_implementation_at: "2026-11-02T23:27:13Z"
+last_implementation_at: "2026-11-02T23:38:54Z"
 ---
 
 # Menú de Seguir viendo como el de las tiles
@@ -29,8 +29,8 @@ Que mantener pulsado OK sobre una tarjeta de "Seguir viendo" abra un menú igual
 
 - El menú lo sigue dibujando el add-on (elegido por el usuario), en lugar de que lo pinte el launcher con `glassPopup`. El protocolo de opciones no cambia: solo gana la posición de la tarjeta, y el aspecto del launcher se copia en el add-on.
 - La posición viaja en `Intent.setSourceBounds`, el campo estándar de Android para indicar dónde está en pantalla lo que lanzó el intent, en lugar de un extra propio. Una app que no lo lea sigue funcionando como hasta ahora.
-- El rectángulo es el visual de la tarjeta enfocada: la esquina de `getLocationOnScreen`, que ya aplica la escala, y el ancho y el alto multiplicados por `getScaleX` y `getScaleY`. Así el panel no pisa el anillo de foco de la escala `FOCUS_SCALE`.
-- La colocación copia la de `MainActivity.onTileLongPress`: el panel va debajo de la tarjeta, alineado con su borde inicial y con 10dp de separación; si no cabe va encima, y se ajusta para quedar dentro de la pantalla. El ancho es de 200dp como mínimo o el que mida el contenido. Sin posición, el panel sale centrado.
+- El rectángulo es la parte visible de la tarjeta enfocada, con `getGlobalVisibleRect` más la posición en pantalla de la ventana, en lugar de calcular la escala a mano: en la TV, la primera tarjeta escalada por `FOCUS_SCALE` sobresale unos 6dp por la izquierda y la fila recorta ese trozo, así que el rectángulo escalado completo dejaba el menú desalineado con lo que se ve. Como es una llamada de Android, no tiene prueba en la JVM y la cubre la prueba en la TV.
+- La colocación copia la de `MainActivity.onTileLongPress`: el panel va debajo de la tarjeta, alineado con su borde inicial y con 10dp de separación; si no cabe va encima, y se ajusta para quedar dentro de la pantalla. Cuando alineado con el borde inicial se saldría de la pantalla, se alinea con el borde final de la tarjeta, en lugar de pegarse al borde de la pantalla: en la TV, con Lupin junto al borde derecho, el menú quedaba pegado al borde, fuera de la zona segura de 48dp que recomienda Android TV. El ancho es de 200dp como mínimo o el que mida el contenido. Sin posición, el panel sale centrado.
 - El panel es una vista dentro de la propia `OptionsActivity`, que ya es translúcida y ocupa toda la pantalla, en lugar de un `PopupWindow`. Se coloca con coordenadas absolutas, restando la posición en pantalla de la vista raíz.
 - Del launcher se copian `glass_panel`, `input_row_bg`, `pill_text`, la fila de 42dp sin icono ni estado de `item_input.xml` (la variante de `addSettingsMenuRow`), el relleno de 6dp de `popup_inputs.xml` y Outfit Medium (`outfit.ttf` con `outfit_medium.xml`, unos 108 KB que solo pesan en el APK del add-on). Junto a la fuente se incluye `FONT-LICENSE-OFL.txt`, como en `addons/prayer-times`.
 - Una prueba del add-on compara sus drawables del menú con los del launcher, para que la copia no se desvíe sin que nadie se entere. Esto acopla el add-on a la ruta del launcher dentro del repo, cosa que se acepta en este fork.
@@ -88,8 +88,7 @@ El launcher envía la posición visual de la tarjeta enfocada y el add-on coloca
 
 ```java
 // Servicios de aplicación (launcher, ContinueWatching)
-static Intent optionsIntent(Context context, Item item, Rect cardBounds);
-static int[] visualBounds(int screenLeft, int screenTop, int width, int height, float scaleX, float scaleY);   // {left, top, right, bottom}
+static Intent optionsIntent(Context context, Item item, Rect cardBounds);   // cardBounds null: sin posición
 
 // Dominio (add-on)
 final class MenuPlacement {
@@ -100,20 +99,18 @@ final class MenuPlacement {
 
 #### Tests
 
-- `launcher/app/src/test/java/com/gathin/tvhome/ContinueWatchingTest`
-  - visualBoundsIncludeTheFocusScale (App con opciones)
 - `addons/seguir-viendo/app/src/test/java/io/github/eltorres/seguirviendo/MenuPlacementTest`
   - fitsBelowAlignsToCardStart (Cabe debajo)
   - opensAboveWhenBelowDoesNotFit (No cabe debajo)
-  - staysInsideTheScreenNearTheEndEdge (Tarjeta junto al borde)
-- Prueba en la TV: App con opciones (el menú sale junto a la tarjeta), App sin opciones y Pulsación corta, que no cambian
+  - alignsToCardEndNearTheEndEdge (Tarjeta junto al borde)
+- Prueba en la TV: App con opciones (el menú sale junto a la parte visible de la tarjeta, también en la primera y la última), App sin opciones y Pulsación corta, que no cambian
 
-- [ ] Launcher: añadir `visualBounds` a `ContinueWatching` con su caso en `ContinueWatchingTest`, y pasar a `optionsIntent` el `Rect` que `ContinueRow.openOptions` calcula con `getLocationOnScreen`, `getScaleX` y `getScaleY` de la tarjeta, que lo pone con `setSourceBounds`.
-- [ ] Add-on: añadir `MenuPlacement.nextTo` con la regla de `MainActivity.onTileLongPress` (debajo con 10dp de separación, encima si no cabe, alineado con el borde inicial según `rtl` y ajustado a la pantalla) y sus casos en `MenuPlacementTest`. En `OptionsActivity`, usarlo cuando `getIntent().getSourceBounds()` no sea nulo y `centered` cuando lo sea. Encima, desplegar desde abajo, como la rama `showAtLocation` de `onTileLongPress`.
-- [ ] Documentar `setSourceBounds` en el protocolo de opciones de `docs/watch-next.md`, el aspecto y la posición del menú en el `README.md` del add-on, y añadir a la tabla de `FORK.md` la diferencia del launcher.
-- [ ] Probar en la TCL C725 con `launcher/build-and-install.sh` y el add-on enviado con `tools/b64push.py`. La persona mantiene OK con el mando real sobre la primera y la última tarjeta de la fila y sobre una del medio, y comprueba que el menú sale pegado debajo o encima, sin pisar el anillo de foco y entero dentro de la pantalla. Comprobar que OK corto sigue abriendo y que una app sin opciones no abre nada. Capturas con `tools/tv.py --screenshot shots/menu-2.png`.
-- [ ] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
+- [x] Launcher: pasar a `optionsIntent` el `Rect` visible de la tarjeta, que `ContinueRow.openOptions` calcula con `getGlobalVisibleRect` más `getLocationOnScreen` de la vista raíz (o `null` si no se ve), y que `optionsIntent` pone con `setSourceBounds`. Primero se hizo con `visualBounds` (esquina de `getLocationOnScreen` y tamaño por la escala), pero en la TV el menú de la primera tarjeta quedaba unos 12 px a la izquierda de lo visible, porque la fila recorta lo que sobresale con la escala.
+- [x] Add-on: añadir `MenuPlacement.nextTo` con la regla de `MainActivity.onTileLongPress` (debajo con 10dp de separación, encima si no cabe, alineado con el borde inicial según `rtl`, o con el final si así no cabe, y ajustado a la pantalla) y sus casos en `MenuPlacementTest`. En `OptionsActivity`, usarlo cuando `getIntent().getSourceBounds()` no sea nulo y `centered` cuando lo sea. Encima, desplegar desde abajo, como la rama `showAtLocation` de `onTileLongPress`.
+- [x] Documentar `setSourceBounds` en el protocolo de opciones de `docs/watch-next.md`, el aspecto y la posición del menú en el `README.md` del add-on, y añadir a la tabla de `FORK.md` la diferencia del launcher.
+- [x] Probar en la TCL C725 con `launcher/build-and-install.sh` y el add-on enviado con `tools/b64push.py`. La persona mantiene OK con el mando real sobre la primera y la última tarjeta de la fila y sobre una del medio, y comprueba que el menú sale pegado debajo o encima, sin pisar el anillo de foco y entero dentro de la pantalla. Comprobar que OK corto sigue abriendo y que una app sin opciones no abre nada. Capturas con `tools/tv.py --screenshot shots/menu-2.png`. Probado por la persona con el mando real: con el menú abierto sobre la primera tarjeta, el borde izquierdo del menú coincide con el borde visible de la tarjeta (~113 px y ~112 px, `shots/menu-2.png`), después de cambiar a `getGlobalVisibleRect`; sobre Lupin, la última tarjeta entera, el borde derecho del menú coincide con el de la tarjeta (~1867 px) y queda separado del borde de la pantalla (`shots/menu-3.png`), después de alinear con el borde final. Debajo de la tarjeta, sin pisar el anillo de foco. OK corto sigue abriendo el episodio. Todas las tarjetas de la fila son del add-on, así que "App sin opciones" no se ha podido probar en la TV; el launcher no cambia en ese caso (`optionsIntent` sigue devolviendo `null` sin actividad).
+- [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
 
 ## Siguiente paso
 
-La Fase 1 está implementada y probada en la TV. Ejecuta `/openspec-apply-change` para implementar la Fase 2, el menú junto a la tarjeta.
+Las dos fases están implementadas y probadas en la TV. Revisa el cambio y, si todo está bien, archívalo con `/openspec-archive-change menu-de-seguir-viendo-como-el-de-las-tiles`.

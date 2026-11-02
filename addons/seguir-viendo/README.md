@@ -22,11 +22,13 @@ OK on a Trakt row opens Stremio, on a Movistar Plus row the official Movistar Pl
   IMDb id, or the app is set to Kodi, it opens the app.
 - **Movistar Plus first, three at most.** The last three things you left unfinished in Movistar Plus come before the
   Trakt rows, with Movistar's own artwork, and open their page in the official app.
-- **Hide what you won't finish.** Hold OK on a card in the launcher's row and this app shows a menu: **Hide this
-  episode**, **Hide season N** or **Hide the series** (for a film, **Don't show again**). The rows it covers leave Watch
-  Next at once and are not published again, until the **Hidden from Continue watching: N** button on this app's
-  screen shows them all again. It hides within one source: a series hidden from Trakt still shows from Movistar
-  Plus. Nothing changes in Trakt or Movistar Plus, so Kodi and other devices still see the pause.
+- **Hide what you won't finish.** Hold OK on a card in the launcher's row and this app shows a menu next to the card,
+  drawn like the launcher's own app-tile menu (below the card, or above it when it does not fit; centred when the
+  launcher sends no position): **Hide this episode**, **Hide season N** or **Hide the series** (for a film, **Don't
+  show again**). The rows it covers leave Watch Next at once and are not published again, until the **Hidden from
+  Continue watching: N** button on this app's screen shows them all again. It hides within one source: a series hidden
+  from Trakt still shows from Movistar Plus. Nothing changes in Trakt or Movistar Plus, so Kodi and other devices
+  still see the pause.
 
 ## Setting it up
 

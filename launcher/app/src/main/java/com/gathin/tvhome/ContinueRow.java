@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Outline;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
@@ -285,7 +286,7 @@ final class ContinueRow extends LinearLayout {
         });
         card.setOnClickListener(v -> host.onRowOpen(item));
         card.setOnLongClickListener(v -> {
-            openOptions(item);
+            openOptions(item, v);
             return true;
         });
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -312,14 +313,23 @@ final class ContinueRow extends LinearLayout {
         return card;
     }
 
-    private void openOptions(ContinueWatching.Item item) {
-        Intent options = ContinueWatching.optionsIntent(getContext(), item);
+    private void openOptions(ContinueWatching.Item item, View card) {
+        Intent options = ContinueWatching.optionsIntent(getContext(), item, onScreen(card));
         if (options == null) return;
         try {
             getContext().startActivity(options);
         } catch (RuntimeException e) {
             Log.w(ContinueWatching.TAG, "could not open the options of " + item.pkg + ": " + e);
         }
+    }
+
+    private static Rect onScreen(View card) {
+        Rect bounds = new Rect();
+        if (!card.getGlobalVisibleRect(bounds)) return null;
+        int[] window = new int[2];
+        card.getRootView().getLocationOnScreen(window);
+        bounds.offset(window[0], window[1]);
+        return bounds;
     }
 
     private TextView label(String s, int sp, int color, int font) {
