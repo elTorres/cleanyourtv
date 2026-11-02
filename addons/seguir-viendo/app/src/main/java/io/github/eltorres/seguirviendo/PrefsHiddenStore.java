@@ -29,6 +29,11 @@ final class PrefsHiddenStore implements HiddenStore {
         prefs.edit().putString(KEYS, append(prefs.getString(KEYS, ""), key)).commit();
     }
 
+    @Override
+    public synchronized void clear() {
+        prefs.edit().remove(KEYS).commit();
+    }
+
     static String append(String stored, String key) {
         List<String> keys = new ArrayList<>(parse(stored));
         keys.remove(key);

@@ -65,4 +65,23 @@ public class HideServiceTest {
             assertFalse(file, source.contains("MovistarAuth"));
         }
     }
+
+    @Test
+    public void restoreAllEmptiesTheList() {
+        MemoryWatchNextStore store = new MemoryWatchNextStore();
+        store.replaceSource("trakt", List.of(episode("trakt", "1", 1, 3), episode("trakt", "2", 1, 1)));
+        MemoryHiddenStore hidden = new MemoryHiddenStore();
+        HideService hide = new HideService(store, hidden);
+        hide.hide(store.published().get(0), HideScope.EPISODE);
+        hide.hide(store.published().get(0), HideScope.SHOW);
+        assertEquals(2, hide.hiddenCount());
+        hide.restoreAll();
+        assertEquals(0, hide.hiddenCount());
+        assertFalse(HiddenItems.hides(hidden.keys(), episode("trakt", "1", 1, 3)));
+    }
+
+    @Test
+    public void countIsZeroWithoutHiddenItems() {
+        assertEquals(0, new HideService(new MemoryWatchNextStore(), new MemoryHiddenStore()).hiddenCount());
+    }
 }

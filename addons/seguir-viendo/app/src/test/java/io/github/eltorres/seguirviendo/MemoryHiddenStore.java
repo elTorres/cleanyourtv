@@ -15,4 +15,9 @@ final class MemoryHiddenStore implements HiddenStore {
     public void add(String key) {
         keys.add(key);
     }
+
+    @Override
+    public void clear() {
+        keys.clear();
+    }
 }

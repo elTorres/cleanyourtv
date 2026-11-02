@@ -16,7 +16,7 @@ implemented_by:
     name: "Claude Opus"
     version: "5.5"
     reasoning_effort: "high"
-last_implementation_at: "2026-11-02T22:05:29Z"
+last_implementation_at: "2026-11-02T22:25:56Z"
 ---
 
 # Ocultar elementos de Seguir viendo
@@ -155,12 +155,12 @@ final class HideService { int hiddenCount(); void restoreAll(); }
   - countIsZeroWithoutHiddenItems (Ninguno oculto)
 - Prueba en la TV (un diálogo de confirmación, sin capa de pruebas de interfaz): Cancelar
 
-- [ ] Añadir `clear` a `HiddenStore` y `PrefsHiddenStore`, y `hiddenCount` y `restoreAll` a `HideService`, con sus casos en `HideServiceTest`.
-- [ ] Añadir el botón `hidden` a `activity_main.xml` del add-on, debajo de las dos fuentes, con su texto en `render()` (`hidden_count` o `hidden_none`) y, al pulsarlo con ocultos, una confirmación con `dialog()` que llama a `restoreAll` y lanza `runSync(services.sync::syncAll)`, como el botón "Sincronizar ahora"; sin ocultos no hace nada. Añadir los textos a `res/values` y `res/values-es`.
-- [ ] Documentar en el `README.md` del add-on la pulsación larga, qué guarda (`hidden`), la actividad exportada y el botón de restablecer, y añadir la diferencia a la tabla de `FORK.md`.
-- [ ] Probar en la TV: con dos elementos ocultos, el botón muestra 2; cancelar los deja ocultos; confirmar sincroniza y, al volver a Home, aparecen; sin ocultos el botón dice "Nada oculto" y no abre el diálogo.
-- [ ] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
+- [x] Añadir `clear` a `HiddenStore` y `PrefsHiddenStore`, y `hiddenCount` y `restoreAll` a `HideService`, con sus casos en `HideServiceTest`.
+- [x] Añadir el botón `hidden` a `activity_main.xml` del add-on, debajo de las dos fuentes, con su texto en `render()` (`hidden_count` o `hidden_none`) y, al pulsarlo con ocultos, una confirmación con `dialog()` que llama a `restoreAll` y lanza `runSync(services.sync::syncAll)`, como el botón "Sincronizar ahora"; sin ocultos no hace nada. Si esa sincronización da error de red, pide además `SyncScheduler.syncSoon`, que espera a tener red y se reintenta: en la prueba, la primera sincronización falló en una fuente y el `FreezeManager` de TCL congeló el proceso del add-on, así que sin el reintento los elementos no volvían hasta la sincronización de la hora siguiente. Añadir los textos a `res/values` y `res/values-es`.
+- [x] Documentar en el `README.md` del add-on la pulsación larga, qué guarda (`hidden`), la actividad exportada y el botón de restablecer, y añadir la diferencia a la tabla de `FORK.md`.
+- [x] Probar en la TV: con dos elementos ocultos, el botón muestra 2; cancelar los deja ocultos; confirmar sincroniza y, al volver a Home, aparecen; sin ocultos el botón dice "Nada oculto" y no abre el diálogo. Probado en la TCL C725 con los 4 elementos que quedaron ocultos en la Fase 1: el botón mostraba 4, cancelar los dejó ocultos, confirmar dejó "Nada oculto en Seguir viendo" y, sin ocultos, el botón no abre nada. Los 4 volvieron a la fila (de 13 a 17 filas del add-on) cuando se completó una sincronización sin error, y la persona lo confirmó en Home.
+- [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
 
 ## Siguiente paso
 
-La Fase 1 está implementada y probada en la TV. Ejecuta `/openspec-apply-change` para implementar la Fase 2.
+Las dos fases están implementadas y probadas en la TV. Revisa el cambio y, si todo está bien, archívalo con `/openspec-archive-change ocultar-elementos-de-seguir-viendo`.
