@@ -6,4 +6,6 @@ interface HiddenStore {
     Set<String> keys();
 
     void add(String key);
+
+    void clear();
 }

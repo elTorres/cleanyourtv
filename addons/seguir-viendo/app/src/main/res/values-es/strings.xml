@@ -30,4 +30,8 @@
     <string name="hide_show">Ocultar la serie</string>
     <string name="hide_title">No mostrar más</string>
     <string name="entry_gone">Esta entrada ya no está en Seguir viendo</string>
+    <string name="hidden_count">Ocultos en Seguir viendo: %1$d</string>
+    <string name="hidden_none">Nada oculto en Seguir viendo</string>
+    <string name="hidden_reset">¿Volver a mostrar los %1$d elementos ocultos?</string>
+    <string name="hidden_show">Volver a mostrar</string>
 </resources>

@@ -22,6 +22,11 @@ OK on a Trakt row opens Stremio, on a Movistar Plus row the official Movistar Pl
   IMDb id, or the app is set to Kodi, it opens the app.
 - **Movistar Plus first, three at most.** The last three things you left unfinished in Movistar Plus come before the
   Trakt rows, with Movistar's own artwork, and open their page in the official app.
+- **Hide what you won't finish.** Hold OK on a card in the launcher's row and this app shows a menu: **Hide this
+  episode**, **Hide season N** or **Hide the series** (for a film, **Don't show again**). The rows it covers leave Watch
+  Next at once and are not published again, until the **Hidden from Continue watching: N** button on this app's
+  screen shows them all again. It hides within one source: a series hidden from Trakt still shows from Movistar
+  Plus. Nothing changes in Trakt or Movistar Plus, so Kodi and other devices still see the pause.
 
 ## Setting it up
 
@@ -101,6 +106,10 @@ sync until the app is opened again.
 | `ACCESS_NETWORK_STATE` | So the hourly sync waits until the TV has a network |
 | `RECEIVE_BOOT_COMPLETED` | To sync once when the TV starts and keep the hourly sync across restarts |
 
+It also has an exported activity, `OptionsActivity`, that the launcher opens on a long press with the action
+`com.gathin.tvhome.action.CONTINUE_WATCHING_OPTIONS` and a Watch Next row id (`docs/watch-next.md`): it only finds
+this app's own rows and hides nothing until you choose an option.
+
 It also has a read-only content provider, `io.github.eltorres.seguirviendo.posters`, that any app can read: it answers
 only to opaque image ids and returns only the artwork, so the launcher can draw it without network access.
 
@@ -118,7 +127,8 @@ Encrypted with a key held in Android Keystore, in the app's private storage:
 - **Movistar Plus:** the account's email and password, the session token and when it expires, the account number,
   the account's user and platform ids, the id of the device it borrows and the chosen profile.
 
-In plain app preferences: the app chosen in **Open in** and the time of the last sync. In its cache: the artwork of
+In plain app preferences: the app chosen in **Open in**, the time of the last sync and, in `hidden`, what you hid
+(the source's ids of each episode, season, series or film, 200 at most, the oldest dropped first). In its cache: the artwork of
 the rows on screen (older pictures are deleted at each sync).
 
 Tokens and passwords never appear in logcat. Removing the app or choosing **Disconnect** removes them. Revoking the

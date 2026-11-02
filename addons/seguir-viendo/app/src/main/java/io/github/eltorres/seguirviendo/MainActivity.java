@@ -42,6 +42,7 @@ public final class MainActivity extends Activity {
     private Button movistarProfile;
     private Button movistarSync;
     private Button movistarDisconnect;
+    private Button hidden;
     private TraktAuth.DeviceCode pending;
     private long pollIntervalMs;
 
@@ -71,6 +72,8 @@ public final class MainActivity extends Activity {
         syncNow.setOnClickListener(v -> sync(TraktPlayback.SOURCE_ID));
         disconnect.setOnClickListener(v -> disconnectTrakt());
         target.setOnClickListener(v -> nextTarget());
+        hidden = findViewById(R.id.hidden);
+        hidden.setOnClickListener(v -> askRestoreHidden());
     }
 
     @Override
@@ -110,6 +113,28 @@ public final class MainActivity extends Activity {
         lastSync.setText(last == 0 ? "" : getString(R.string.last_sync,
                 DateFormat.getTimeFormat(this).format(new Date(last))));
         if (pending == null) traktCode.setText("");
+        int hiddenCount = services.hide.hiddenCount();
+        hidden.setText(hiddenCount == 0 ? getString(R.string.hidden_none)
+                : getString(R.string.hidden_count, hiddenCount));
+    }
+
+    private void askRestoreHidden() {
+        int count = services.hide.hiddenCount();
+        if (count == 0) return;
+        dialog().setMessage(getString(R.string.hidden_reset, count))
+                .setPositiveButton(R.string.hidden_show, (d, w) -> restoreHidden())
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void restoreHidden() {
+        services.hide.restoreAll();
+        render();
+        runSync(() -> {
+            SyncReport report = services.sync.syncAll();
+            if (report.outcomes().containsValue(SyncReport.Outcome.NETWORK_ERROR)) SyncScheduler.syncSoon(this);
+            return report;
+        });
     }
 
     private void renderMovistar() {

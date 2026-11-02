@@ -25,6 +25,7 @@ Nada de lo que está aquí se envía a upstream salvo que se diga lo contrario e
 | Add-on que publica en Watch Next lo que está a medias en Trakt | `addons/seguir-viendo/` | Hecho |
 | Siguiente episodio, pósters, deep link de Stremio y sincronización automática | `addons/seguir-viendo/` | Pendiente |
 | Fuente Movistar Plus | `addons/seguir-viendo/` | Pendiente |
+| Ocultar elementos de "Seguir viendo" con pulsación larga (episodio, temporada, serie o película) y restablecerlos desde el add-on; el launcher solo abre las opciones de la app que publicó la entrada | `launcher/`, `addons/seguir-viendo/`, `docs/watch-next.md`, `docs/launcher.md` | Hecho |
 
 El plan completo está en `openspec/changes/seguir-viendo-fork-trakt-movistar/`.
 

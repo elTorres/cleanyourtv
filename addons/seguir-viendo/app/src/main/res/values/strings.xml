@@ -33,4 +33,8 @@
     <string name="hide_show">Hide the series</string>
     <string name="hide_title">Don\'t show again</string>
     <string name="entry_gone">This item is no longer in Continue watching</string>
+    <string name="hidden_count">Hidden from Continue watching: %1$d</string>
+    <string name="hidden_none">Nothing hidden from Continue watching</string>
+    <string name="hidden_reset">Show the %1$d hidden items again?</string>
+    <string name="hidden_show">Show again</string>
 </resources>

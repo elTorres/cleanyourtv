@@ -30,4 +30,12 @@ final class HideService {
             if (HiddenItems.hides(keys, published)) store.delete(published.id());
         }
     }
+
+    int hiddenCount() {
+        return hidden.keys().size();
+    }
+
+    synchronized void restoreAll() {
+        hidden.clear();
+    }
 }
