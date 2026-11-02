@@ -1,6 +1,7 @@
 package io.github.eltorres.seguirviendo;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
 public final class OptionsActivity extends Activity {
     static final String EXTRA_PROGRAM_ID = "com.gathin.tvhome.extra.WATCH_NEXT_PROGRAM_ID";
     private static final int DROP_IN_MS = 220;
+    private static final int CARD_GAP_DP = 10;
 
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -88,9 +90,8 @@ public final class OptionsActivity extends Activity {
     }
 
     private void dropIn(View screen, ViewGroup panel) {
-        MenuPlacement placement = MenuPlacement.centered(panel.getWidth(), panel.getHeight(),
-                screen.getWidth(), screen.getHeight());
         float density = getResources().getDisplayMetrics().density;
+        MenuPlacement placement = placement(screen, panel, Math.round(CARD_GAP_DP * density));
         panel.setX(placement.x());
         panel.setY(placement.y() + (placement.above() ? 8 : -8) * density);
         panel.setAlpha(0f);
@@ -100,6 +101,19 @@ public final class OptionsActivity extends Activity {
         panel.animate().alpha(1f).scaleY(1f).y(placement.y()).setDuration(DROP_IN_MS)
                 .setInterpolator(new DecelerateInterpolator(1.6f)).start();
         if (panel.getChildCount() > 0) panel.getChildAt(0).requestFocus();
+    }
+
+    private MenuPlacement placement(View screen, View panel, int gap) {
+        Rect card = getIntent().getSourceBounds();
+        if (card == null) {
+            return MenuPlacement.centered(panel.getWidth(), panel.getHeight(), screen.getWidth(), screen.getHeight());
+        }
+        int[] origin = new int[2];
+        screen.getLocationOnScreen(origin);
+        boolean rtl = screen.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        return MenuPlacement.nextTo(card.left - origin[0], card.top - origin[1], card.right - origin[0],
+                card.bottom - origin[1], panel.getWidth(), panel.getHeight(), screen.getWidth(), screen.getHeight(),
+                gap, rtl);
     }
 
     private void hide(PublishedRow row, HideScope scope) {
