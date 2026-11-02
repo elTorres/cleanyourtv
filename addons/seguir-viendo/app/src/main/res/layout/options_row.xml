@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:background="@drawable/menu_row"
+    android:focusable="true"
+    android:clickable="true">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="12dp"
+        android:textColor="@color/menu_row_text"
+        android:duplicateParentState="true"
+        android:textSize="15sp"
+        android:fontFamily="@font/outfit_medium"
+        android:singleLine="true" />
+</LinearLayout>

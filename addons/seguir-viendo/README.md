@@ -138,7 +138,8 @@ Movistar Plus password ends that one.
 ## Credits
 
 This product uses the TMDB API but is not endorsed or certified by TMDB. Viewing data comes from Trakt and Movistar
-Plus. Not affiliated with, endorsed or supported by Telefónica or Movistar Plus.
+Plus. Not affiliated with, endorsed or supported by Telefónica or Movistar Plus. Font: Outfit (SIL Open Font
+License, `FONT-LICENSE-OFL.txt`).
 
 ## Tested on
 
