@@ -1,0 +1,502 @@
+{
+  "self": {
+    "href": "https://perso.dof6.com/movistarplus/amazon.tv/users/USER/viewings?profile=LITE&container=trackedseries",
+    "rel": "self"
+  },
+  "next": {
+    "href": null,
+    "rel": "next"
+  },
+  "prev": {
+    "href": null,
+    "rel": "prev"
+  },
+  "tags": [],
+  "count": 3,
+  "totalCount": 3,
+  "Contenidos": [
+    {
+      "DatosAccesoAnonimo": {
+        "TipoEmision": null,
+        "TipoComercial": null,
+        "TipoComercial2": null,
+        "Freemium": null,
+        "TiposComerciales": null,
+        "Logos": null,
+        "Precio": null,
+        "HoraInicio": null,
+        "FechaFinPublicacion": null,
+        "FormatoVideo": null,
+        "FormatoAudio": null,
+        "VersionIdioma": null,
+        "HoraInicioSaltoCanal": null,
+        "HoraFinSaltoCanal": null,
+        "Subtitulos": null,
+        "Subtitulos2012": null,
+        "IndicadorSubtitulosSordos": null
+      },
+      "DatosEditoriales": {
+        "Id": 9000102,
+        "TipoContenido": "Episodio",
+        "CodSubTipoContenido": "E",
+        "SubTipoContenido": "episodios",
+        "TipoComercial": "Subscripcion",
+        "Ficha": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000102/details?profile=LITE",
+        "TipoEmision": "Vod",
+        "TipoComercial2": {
+          "Tipo": "Subscripcion",
+          "Descripcion": "INT"
+        },
+        "links": [
+          {
+            "rel": "details",
+            "href": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000102/details?profile=LITE",
+            "id": 9000102
+          },
+          {
+            "rel": "alternate",
+            "href": "appmovistar://movistarplus.es/ficha?id=9000102&referrer=api",
+            "class": "entryPoint",
+            "hints": {
+              "devices": [
+                "android.cell",
+                "iphone",
+                "amazon.tv"
+              ]
+            }
+          }
+        ],
+        "TiposComerciales": [
+          {
+            "Tipo": "Subscripcion",
+            "Descripcion": null
+          }
+        ],
+        "Contenedor": null,
+        "ContenedorRef": {
+          "Id": 9000100,
+          "Path": "T-9000101|E-9000102",
+          "Url": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000100/details?profile=LITE"
+        },
+        "Directo": false,
+        "Titulo": "Serie de prueba (T3): Segundo episodio",
+        "Estreno": false,
+        "TituloVO": "Serie de prueba",
+        "LenguajeSignos": false,
+        "Lanzable": true,
+        "NivelMoral": {
+          "_id": "01",
+          "Id": "TP"
+        },
+        "Duracion": 40,
+        "DuracionEnSegundos": 2400,
+        "IdSerie": 9000100,
+        "GeneroComAntena": "Documental",
+        "Imagenes": [
+          {
+            "id": "default",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/smartv_list_landscape/F9000001"
+          },
+          {
+            "id": "detail",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/smartvfic/F9000001"
+          },
+          {
+            "id": "vertical",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_vertical/F9000001.jpg"
+          },
+          {
+            "id": "vertical1",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_vertical1/F9000001.jpg"
+          },
+          {
+            "id": "horizontal",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_horizontal/F9000001.jpg"
+          },
+          {
+            "id": "f169",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/prote_169/F9000001.jpg"
+          },
+          {
+            "id": "fanart",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_fanart/F9000001.jpg"
+          },
+          {
+            "id": "hor-row",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4a_ch/F9000001.jpg"
+          },
+          {
+            "id": "ver-row",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4a_cv/F9000001.jpg"
+          },
+          {
+            "id": "ver-details",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4_fc/F9000001.jpg"
+          }
+        ],
+        "TituloSerie": "Serie de prueba",
+        "TituloEpisodio": "Segundo episodio",
+        "NumeroEpisodio": "02",
+        "TituloEpisodioLargo": " E2 \"Segundo episodio\"",
+        "TituloVerLinea1": null,
+        "TituloVerLinea2": null,
+        "TituloHorLinea1": null,
+        "TituloHorLinea2": null,
+        "TituloAccesible": "Serie de prueba (T3): Segundo episodio",
+        "Valoracion": {
+          "Valoracion": 4.0,
+          "Valoraciones": 10
+        },
+        "RutaNormalizada": "serie-inventada",
+        "Competicion": null,
+        "Anno": "2024",
+        "Sinopsis": "Sinopsis inventada.",
+        "Resena": null,
+        "BingeWatchingAction": "bingeWatching"
+      },
+      "Pases": [],
+      "autoplay": null,
+      "Bookmark": {
+        "id": 9000102,
+        "contentId": 9000102,
+        "offset": 1200,
+        "duration": 2400,
+        "seen": false,
+        "family": "vod"
+      },
+      "Descargable": true,
+      "extras": [],
+      "VodItems": [],
+      "links": [
+        {
+          "rel": "unfollow2",
+          "href": "https://grmovistar.imagenio.telefonica.net/asfe/rest/users/seriesTrackings/9000100",
+          "id": 9000100,
+          "published": false
+        }
+      ]
+    },
+    {
+      "DatosAccesoAnonimo": {
+        "TipoEmision": null,
+        "TipoComercial": null,
+        "TipoComercial2": null,
+        "Freemium": null,
+        "TiposComerciales": null,
+        "Logos": null,
+        "Precio": null,
+        "HoraInicio": null,
+        "FechaFinPublicacion": null,
+        "FormatoVideo": null,
+        "FormatoAudio": null,
+        "VersionIdioma": null,
+        "HoraInicioSaltoCanal": null,
+        "HoraFinSaltoCanal": null,
+        "Subtitulos": null,
+        "Subtitulos2012": null,
+        "IndicadorSubtitulosSordos": null
+      },
+      "DatosEditoriales": {
+        "Id": 9000202,
+        "TipoContenido": "Episodio",
+        "CodSubTipoContenido": "E",
+        "SubTipoContenido": "episodios",
+        "TipoComercial": "Subscripcion",
+        "Ficha": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000202/details?profile=LITE",
+        "TipoEmision": "Vod",
+        "TipoComercial2": {
+          "Tipo": "Subscripcion",
+          "Descripcion": "INT"
+        },
+        "links": [
+          {
+            "rel": "details",
+            "href": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000202/details?profile=LITE",
+            "id": 9000202
+          },
+          {
+            "rel": "alternate",
+            "href": "appmovistar://movistarplus.es/ficha?id=9000202&referrer=api",
+            "class": "entryPoint",
+            "hints": {
+              "devices": [
+                "android.cell",
+                "iphone",
+                "amazon.tv"
+              ]
+            }
+          }
+        ],
+        "TiposComerciales": [
+          {
+            "Tipo": "Subscripcion",
+            "Descripcion": null
+          }
+        ],
+        "Contenedor": null,
+        "ContenedorRef": {
+          "Id": 9000200,
+          "Path": "T-9000201|E-9000202",
+          "Url": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000200/details?profile=LITE"
+        },
+        "Directo": false,
+        "Titulo": "Otra serie: El siguiente",
+        "Estreno": false,
+        "TituloVO": "Otra serie",
+        "LenguajeSignos": false,
+        "Lanzable": true,
+        "NivelMoral": {
+          "_id": "01",
+          "Id": "TP"
+        },
+        "Duracion": 50,
+        "DuracionEnSegundos": 3000,
+        "IdSerie": 9000200,
+        "GeneroComAntena": "Documental",
+        "Imagenes": [
+          {
+            "id": "default",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/smartv_list_landscape/F9000002"
+          },
+          {
+            "id": "detail",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/smartvfic/F9000002"
+          },
+          {
+            "id": "vertical",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_vertical/F9000002.jpg"
+          },
+          {
+            "id": "vertical1",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_vertical1/F9000002.jpg"
+          },
+          {
+            "id": "horizontal",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_horizontal/F9000002.jpg"
+          },
+          {
+            "id": "f169",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/prote_169/F9000002.jpg"
+          },
+          {
+            "id": "fanart",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_fanart/F9000002.jpg"
+          },
+          {
+            "id": "hor-row",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4a_ch/F9000002.jpg"
+          },
+          {
+            "id": "ver-row",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4a_cv/F9000002.jpg"
+          },
+          {
+            "id": "ver-details",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4_fc/F9000002.jpg"
+          }
+        ],
+        "TituloSerie": "Otra serie",
+        "TituloEpisodio": "El siguiente",
+        "NumeroEpisodio": "05",
+        "TituloEpisodioLargo": " E5 \"El siguiente\"",
+        "TituloVerLinea1": null,
+        "TituloVerLinea2": null,
+        "TituloHorLinea1": null,
+        "TituloHorLinea2": null,
+        "TituloAccesible": "Otra serie: El siguiente",
+        "Valoracion": {
+          "Valoracion": 4.0,
+          "Valoraciones": 10
+        },
+        "RutaNormalizada": "serie-inventada",
+        "Competicion": null,
+        "Anno": "2024",
+        "Sinopsis": "Sinopsis inventada.",
+        "Resena": null,
+        "BingeWatchingAction": "bingeWatching"
+      },
+      "Pases": [],
+      "autoplay": null,
+      "Bookmark": {
+        "id": 9000202,
+        "contentId": 9000202,
+        "offset": 0,
+        "duration": 3000,
+        "seen": false,
+        "family": "vod"
+      },
+      "Descargable": true,
+      "extras": [],
+      "VodItems": [],
+      "links": [
+        {
+          "rel": "unfollow2",
+          "href": "https://grmovistar.imagenio.telefonica.net/asfe/rest/users/seriesTrackings/9000200",
+          "id": 9000200,
+          "published": false
+        }
+      ]
+    },
+    {
+      "DatosAccesoAnonimo": {
+        "TipoEmision": null,
+        "TipoComercial": null,
+        "TipoComercial2": null,
+        "Freemium": null,
+        "TiposComerciales": null,
+        "Logos": null,
+        "Precio": null,
+        "HoraInicio": null,
+        "FechaFinPublicacion": null,
+        "FormatoVideo": null,
+        "FormatoAudio": null,
+        "VersionIdioma": null,
+        "HoraInicioSaltoCanal": null,
+        "HoraFinSaltoCanal": null,
+        "Subtitulos": null,
+        "Subtitulos2012": null,
+        "IndicadorSubtitulosSordos": null
+      },
+      "DatosEditoriales": {
+        "Id": 9000302,
+        "TipoContenido": "Episodio",
+        "CodSubTipoContenido": "E",
+        "SubTipoContenido": "episodios",
+        "TipoComercial": "Subscripcion",
+        "Ficha": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000302/details?profile=LITE",
+        "TipoEmision": "Vod",
+        "TipoComercial2": {
+          "Tipo": "Subscripcion",
+          "Descripcion": "INT"
+        },
+        "links": [
+          {
+            "rel": "details",
+            "href": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000302/details?profile=LITE",
+            "id": 9000302
+          },
+          {
+            "rel": "alternate",
+            "href": "appmovistar://movistarplus.es/ficha?id=9000302&referrer=api",
+            "class": "entryPoint",
+            "hints": {
+              "devices": [
+                "android.cell",
+                "iphone",
+                "amazon.tv"
+              ]
+            }
+          }
+        ],
+        "TiposComerciales": [
+          {
+            "Tipo": "Subscripcion",
+            "Descripcion": null
+          }
+        ],
+        "Contenedor": null,
+        "ContenedorRef": {
+          "Id": 9000300,
+          "Path": "T-9000301|E-9000302",
+          "Url": "https://ottcache.dof6.com/movistarplus/amazon.tv/contents/9000300/details?profile=LITE"
+        },
+        "Directo": false,
+        "Titulo": "Serie terminada (T1): Ya visto",
+        "Estreno": false,
+        "TituloVO": "Serie terminada",
+        "LenguajeSignos": false,
+        "Lanzable": true,
+        "NivelMoral": {
+          "_id": "01",
+          "Id": "TP"
+        },
+        "Duracion": 30,
+        "DuracionEnSegundos": 1800,
+        "IdSerie": 9000300,
+        "GeneroComAntena": "Documental",
+        "Imagenes": [
+          {
+            "id": "default",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/smartv_list_landscape/F9000003"
+          },
+          {
+            "id": "detail",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/smartvfic/F9000003"
+          },
+          {
+            "id": "vertical",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_vertical/F9000003.jpg"
+          },
+          {
+            "id": "vertical1",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_vertical1/F9000003.jpg"
+          },
+          {
+            "id": "horizontal",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_horizontal/F9000003.jpg"
+          },
+          {
+            "id": "f169",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/prote_169/F9000003.jpg"
+          },
+          {
+            "id": "fanart",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/bigtv_fanart/F9000003.jpg"
+          },
+          {
+            "id": "hor-row",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4a_ch/F9000003.jpg"
+          },
+          {
+            "id": "ver-row",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4a_cv/F9000003.jpg"
+          },
+          {
+            "id": "ver-details",
+            "uri": "https://estatico.emisiondof6.com/recorte/n/mux4_fc/F9000003.jpg"
+          }
+        ],
+        "TituloSerie": "Serie terminada",
+        "TituloEpisodio": "Ya visto",
+        "NumeroEpisodio": "08",
+        "TituloEpisodioLargo": " E8 \"Ya visto\"",
+        "TituloVerLinea1": null,
+        "TituloVerLinea2": null,
+        "TituloHorLinea1": null,
+        "TituloHorLinea2": null,
+        "TituloAccesible": "Serie terminada (T1): Ya visto",
+        "Valoracion": {
+          "Valoracion": 4.0,
+          "Valoraciones": 10
+        },
+        "RutaNormalizada": "serie-inventada",
+        "Competicion": null,
+        "Anno": "2024",
+        "Sinopsis": "Sinopsis inventada.",
+        "Resena": null,
+        "BingeWatchingAction": "bingeWatching"
+      },
+      "Pases": [],
+      "autoplay": null,
+      "Bookmark": {
+        "id": 9000302,
+        "contentId": 9000302,
+        "offset": 0,
+        "duration": 1800,
+        "seen": true,
+        "family": "vod"
+      },
+      "Descargable": true,
+      "extras": [],
+      "VodItems": [],
+      "links": [
+        {
+          "rel": "unfollow2",
+          "href": "https://grmovistar.imagenio.telefonica.net/asfe/rest/users/seriesTrackings/9000300",
+          "id": 9000300,
+          "published": false
+        }
+      ]
+    }
+  ]
+}

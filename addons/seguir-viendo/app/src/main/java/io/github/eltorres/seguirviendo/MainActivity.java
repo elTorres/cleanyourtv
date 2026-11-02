@@ -1,14 +1,19 @@
 package io.github.eltorres.seguirviendo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -16,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 public final class MainActivity extends Activity {
     private static final long SLOW_DOWN_MS = 5_000;
@@ -31,6 +37,11 @@ public final class MainActivity extends Activity {
     private Button target;
     private TextView posters;
     private TextView lastSync;
+    private TextView movistarState;
+    private Button movistarConnect;
+    private Button movistarProfile;
+    private Button movistarSync;
+    private Button movistarDisconnect;
     private TraktAuth.DeviceCode pending;
     private long pollIntervalMs;
 
@@ -47,8 +58,17 @@ public final class MainActivity extends Activity {
         target = findViewById(R.id.target_app);
         posters = findViewById(R.id.posters);
         lastSync = findViewById(R.id.last_sync);
+        movistarState = findViewById(R.id.movistar_state);
+        movistarConnect = findViewById(R.id.movistar_connect);
+        movistarProfile = findViewById(R.id.movistar_profile);
+        movistarSync = findViewById(R.id.movistar_sync);
+        movistarSync.setOnClickListener(v -> sync(MovistarAuth.SOURCE_ID));
+        movistarDisconnect = findViewById(R.id.movistar_disconnect);
+        movistarConnect.setOnClickListener(v -> askMovistarCredentials());
+        movistarProfile.setOnClickListener(v -> chooseMovistarProfile());
+        movistarDisconnect.setOnClickListener(v -> disconnectMovistar());
         traktConnect.setOnClickListener(v -> requestCode());
-        syncNow.setOnClickListener(v -> syncAll());
+        syncNow.setOnClickListener(v -> sync(TraktPlayback.SOURCE_ID));
         disconnect.setOnClickListener(v -> disconnectTrakt());
         target.setOnClickListener(v -> nextTarget());
     }
@@ -73,6 +93,7 @@ public final class MainActivity extends Activity {
     }
 
     private void render() {
+        renderMovistar();
         SourceState state = services.traktAuth.state();
         traktState.setText(stateText(state));
         traktConnect.setEnabled(state != SourceState.UNAVAILABLE);
@@ -81,12 +102,180 @@ public final class MainActivity extends Activity {
         boolean signedIn = state == SourceState.CONNECTED || state == SourceState.RECONNECT_NEEDED;
         disconnect.setVisibility(signedIn ? View.VISIBLE : View.GONE);
         target.setText(getString(R.string.target_app, label(currentTarget())));
-        posters.setText(services.posters.available() ? R.string.posters_on : R.string.posters_off);
-        if (state == SourceState.CONNECTED) SyncScheduler.schedule(this);
+        posters.setText(services.tmdbPosters ? R.string.posters_on : R.string.posters_off);
+        if (state == SourceState.CONNECTED || services.movistarAuth.state() == SourceState.CONNECTED) {
+            SyncScheduler.schedule(this);
+        }
         long last = services.settings.lastSyncMs();
         lastSync.setText(last == 0 ? "" : getString(R.string.last_sync,
                 DateFormat.getTimeFormat(this).format(new Date(last))));
         if (pending == null) traktCode.setText("");
+    }
+
+    private void renderMovistar() {
+        SourceState state = services.movistarAuth.state();
+        movistarState.setText(stateText(state));
+        movistarConnect.setText(state == SourceState.CONNECTED ? R.string.trakt_reconnect : R.string.movistar_connect);
+        movistarConnect.setEnabled(true);
+        movistarProfile.setVisibility(state == SourceState.CONNECTED ? View.VISIBLE : View.GONE);
+        movistarSync.setVisibility(state == SourceState.CONNECTED ? View.VISIBLE : View.GONE);
+        movistarSync.setEnabled(true);
+        boolean signedIn = state == SourceState.CONNECTED || state == SourceState.RECONNECT_NEEDED;
+        movistarDisconnect.setVisibility(signedIn ? View.VISIBLE : View.GONE);
+    }
+
+    private AlertDialog.Builder dialog() {
+        return new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+    }
+
+    private void askMovistarCredentials() {
+        EditText user = new EditText(this);
+        user.setId(View.generateViewId());
+        user.setHint(R.string.movistar_user);
+        user.setSingleLine(true);
+        user.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        user.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        EditText password = new EditText(this);
+        password.setId(View.generateViewId());
+        password.setHint(R.string.movistar_password);
+        password.setSingleLine(true);
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        password.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        user.setNextFocusDownId(password.getId());
+        user.setNextFocusForwardId(password.getId());
+        password.setNextFocusUpId(user.getId());
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        int padding = Math.round(24 * getResources().getDisplayMetrics().density);
+        form.setPadding(padding, padding / 2, padding, 0);
+        form.addView(user);
+        form.addView(password);
+        AlertDialog credentials = dialog().setTitle(R.string.movistar_connect)
+                .setView(form)
+                .setPositiveButton(R.string.connect, (d, w) ->
+                        loginMovistar(user.getText().toString().trim(), password.getText().toString()))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+        password.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId != EditorInfo.IME_ACTION_DONE) return false;
+            credentials.dismiss();
+            loginMovistar(user.getText().toString().trim(), password.getText().toString());
+            return true;
+        });
+    }
+
+    private void loginMovistar(String user, String password) {
+        if (user.isEmpty() || password.isEmpty()) return;
+        movistarConnect.setEnabled(false);
+        worker.execute(() -> {
+            try {
+                if (services.movistarAuth.login(user, password) == MovistarAuth.LoginResult.BAD_PASSWORD) {
+                    main.post(() -> {
+                        renderMovistar();
+                        movistarState.setText(R.string.movistar_bad_password);
+                    });
+                    return;
+                }
+                List<MovistarAuth.Device> devices = services.movistarAuth.devices();
+                main.post(() -> chooseMovistarDevice(devices));
+            } catch (IOException | AuthException e) {
+                movistarFailed("Movistar Plus login failed", e);
+            }
+        });
+    }
+
+    private void chooseMovistarDevice(List<MovistarAuth.Device> devices) {
+        if (devices.isEmpty()) {
+            dialog().setMessage(R.string.movistar_device_warning)
+                    .setPositiveButton(R.string.connect, (d, w) -> registerMovistarDevice())
+                    .setNegativeButton(R.string.cancel, (d, w) -> renderMovistar())
+                    .setOnCancelListener(d -> renderMovistar())
+                    .show();
+            return;
+        }
+        String[] labels = new String[devices.size()];
+        for (int i = 0; i < labels.length; i++) {
+            MovistarAuth.Device device = devices.get(i);
+            labels[i] = device.name.isEmpty() ? device.type : device.name + " · " + device.type;
+        }
+        dialog().setTitle(R.string.movistar_device)
+                .setItems(labels, (d, which) -> {
+                    services.movistarAuth.selectDevice(devices.get(which).id);
+                    chooseMovistarProfile();
+                })
+                .setOnCancelListener(d -> renderMovistar())
+                .show();
+    }
+
+    private void registerMovistarDevice() {
+        worker.execute(() -> {
+            try {
+                services.movistarAuth.registerDevice();
+                main.post(this::chooseMovistarProfile);
+            } catch (IOException | AuthException e) {
+                movistarFailed("Movistar Plus device registration failed", e);
+            }
+        });
+    }
+
+    private void chooseMovistarProfile() {
+        movistarProfile.setEnabled(false);
+        worker.execute(() -> {
+            try {
+                List<MovistarAuth.Profile> profiles = services.movistarAuth.profiles();
+                main.post(() -> showMovistarProfiles(profiles));
+            } catch (IOException | AuthException e) {
+                movistarFailed("Movistar Plus profiles failed", e);
+            }
+        });
+    }
+
+    private void showMovistarProfiles(List<MovistarAuth.Profile> profiles) {
+        movistarProfile.setEnabled(true);
+        if (profiles.isEmpty()) {
+            afterMovistarProfile();
+            return;
+        }
+        String[] names = new String[profiles.size()];
+        int checked = 0;
+        for (int i = 0; i < names.length; i++) {
+            names[i] = profiles.get(i).name;
+            if (profiles.get(i).id.equals(services.movistarAuth.profileId())) checked = i;
+        }
+        dialog().setTitle(R.string.movistar_profile)
+                .setSingleChoiceItems(names, checked, (d, which) -> {
+                    services.movistarAuth.selectProfile(profiles.get(which).id);
+                    d.dismiss();
+                    afterMovistarProfile();
+                })
+                .setOnCancelListener(d -> afterMovistarProfile())
+                .show();
+    }
+
+    private void afterMovistarProfile() {
+        render();
+        syncAll();
+    }
+
+    private void movistarFailed(String message, Exception e) {
+        Logs.w(services.secrets, message, e);
+        main.post(() -> {
+            renderMovistar();
+            movistarProfile.setEnabled(true);
+            movistarState.setText(e instanceof AuthException ? R.string.reconnect_needed : R.string.network_error);
+        });
+    }
+
+    private void disconnectMovistar() {
+        movistarDisconnect.setEnabled(false);
+        worker.execute(() -> {
+            services.sources.disconnect(MovistarAuth.SOURCE_ID);
+            if (services.traktAuth.state() != SourceState.CONNECTED) SyncScheduler.cancel(this);
+            main.post(() -> {
+                movistarDisconnect.setEnabled(true);
+                render();
+            });
+        });
     }
 
     private int stateText(SourceState state) {
@@ -169,7 +358,7 @@ public final class MainActivity extends Activity {
         disconnect.setEnabled(false);
         worker.execute(() -> {
             services.sources.disconnect(TraktPlayback.SOURCE_ID);
-            SyncScheduler.cancel(this);
+            if (services.movistarAuth.state() != SourceState.CONNECTED) SyncScheduler.cancel(this);
             services.posters.retainOnly(List.of());
             main.post(() -> {
                 disconnect.setEnabled(true);
@@ -201,14 +390,25 @@ public final class MainActivity extends Activity {
     }
 
     private void syncAll() {
+        runSync(() -> services.sync.syncAll());
+    }
+
+    private void sync(String sourceId) {
+        runSync(() -> services.sync.sync(sourceId));
+    }
+
+    private void runSync(Supplier<SyncReport> work) {
         syncNow.setEnabled(false);
+        movistarSync.setEnabled(false);
         worker.execute(() -> {
-            SyncReport report = services.sync.syncAll();
+            SyncReport report = work.get();
             services.settings.setLastSyncMs(report.finishedAtMs());
             boolean failed = report.outcomes().containsValue(SyncReport.Outcome.NETWORK_ERROR);
+            boolean reconnect = report.outcomes().containsValue(SyncReport.Outcome.RECONNECT_NEEDED);
             main.post(() -> {
                 render();
                 if (failed) lastSync.append("\n" + getString(R.string.network_error));
+                else if (reconnect) lastSync.append("\n" + getString(R.string.reconnect_needed));
             });
         });
     }

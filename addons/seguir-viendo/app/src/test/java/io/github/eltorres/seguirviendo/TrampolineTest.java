@@ -29,4 +29,15 @@ public class TrampolineTest {
         assertEquals(Trampoline.STREMIO, Trampoline.nextTarget(Trampoline.KODI, pkg -> true));
         assertEquals(Trampoline.STREMIO, Trampoline.nextTarget(Trampoline.STREMIO, Trampoline.STREMIO::equals));
     }
+
+    @Test
+    public void opensOfficialMovistarApp() throws Exception {
+        OpenTarget target = MovistarViewings.parse(Fixtures.read("movistar-viewings.json"), Fixtures.NOW).get(0).target();
+        assertEquals(MovistarViewings.APP, target.targetPackage());
+        String intent = WatchNextMapper.intentUri(target);
+        assertEquals("intent:#Intent;component=io.github.eltorres.seguirviendo/.TrampolineActivity"
+                + ";S.target=com.movistarplus.androidtv"
+                + ";S.link=appmovistar%3A%2F%2Fmovistarplus.es%2Fficha%3Fid%3D9000102;end", intent);
+        assertEquals(Trampoline.Action.OPEN_LINK, Trampoline.choose(true, true));
+    }
 }

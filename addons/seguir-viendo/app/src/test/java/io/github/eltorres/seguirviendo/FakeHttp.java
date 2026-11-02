@@ -9,6 +9,7 @@ import java.util.Map;
 final class FakeHttp implements Http {
     final List<String> requests = new ArrayList<>();
     final List<String> bodies = new ArrayList<>();
+    final List<Map<String, String>> headers = new ArrayList<>();
     private final Deque<Response> answers = new ArrayDeque<>();
     private final Deque<byte[]> images = new ArrayDeque<>();
 
@@ -34,6 +35,7 @@ final class FakeHttp implements Http {
     public Response send(String method, String url, Map<String, String> headers, String body) {
         requests.add(method + " " + url);
         bodies.add(body);
+        this.headers.add(headers);
         Response next = answers.poll();
         if (next == null) throw new AssertionError("unexpected request " + method + " " + url);
         return next;

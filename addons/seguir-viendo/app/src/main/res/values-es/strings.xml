@@ -16,4 +16,13 @@
     <string name="target_app">Abrir en: %1$s</string>
     <string name="posters_on">Carátulas de TMDB</string>
     <string name="posters_off">Sin carátulas: falta tmdb.apiKey en local.properties</string>
+    <string name="movistar_connect">Conectar Movistar Plus</string>
+    <string name="movistar_user">Usuario</string>
+    <string name="movistar_password">Clave</string>
+    <string name="movistar_bad_password">Usuario o clave no válidos</string>
+    <string name="movistar_device_warning">Movistar Plus contará este add-on como un dispositivo más de tu cuenta. ¿Continuar?</string>
+    <string name="movistar_device">Dispositivo de la cuenta que usará el add-on</string>
+    <string name="movistar_profile">Perfil</string>
+    <string name="connect">Conectar</string>
+    <string name="cancel">Cancelar</string>
 </resources>
