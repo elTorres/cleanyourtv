@@ -26,6 +26,7 @@ Nada de lo que está aquí se envía a upstream salvo que se diga lo contrario e
 | Siguiente episodio, pósters, deep link de Stremio y sincronización automática | `addons/seguir-viendo/` | Hecho |
 | Fuente Movistar Plus | `addons/seguir-viendo/` | Hecho |
 | Ocultar elementos de "Seguir viendo" con pulsación larga (episodio, temporada, serie o película) y restablecerlos desde el add-on; el launcher solo abre las opciones de la app que publicó la entrada | `launcher/`, `addons/seguir-viendo/`, `docs/watch-next.md`, `docs/launcher.md` | Hecho |
+| Límite de tamaño del APK del launcher subido de 589,824 B (576 KB) a 614,400 B (600 KB), solo en el fork: la fila "Seguir viendo" y su pulsación larga añaden unos 6,7 KB a un upstream que ya está en el límite | `.github/workflows/ci.yml`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/workflows/translation.md`, `tests/test_translation_recipe_gate.py`, `tests/test_contributing_build_from_source.py` | Hecho |
 
 Los planes están archivados en `openspec/changes/archive/2026-11-02-seguir-viendo-fork-trakt-movistar/` y `openspec/changes/archive/2026-11-02-ocultar-elementos-de-seguir-viendo/`, y sus requisitos en `openspec/specs/`.
 
