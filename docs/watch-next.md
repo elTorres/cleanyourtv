@@ -97,5 +97,13 @@ still be slow, as Jellyfin's provider fetches each one from its server (about fo
 LEAP-S3), so the row comes up with banners first and swaps each poster in as it arrives, with a small cache
 across Home resumes. A row's `intent_uri` is only followed when it points at the app that published the row.
 
+Holding OK on a card opens the options of the app that published the row, when it offers any: the launcher starts
+an activity in that package with the action `com.gathin.tvhome.action.CONTINUE_WATCHING_OPTIONS` (category
+`DEFAULT`) and the row's `_id` as the long extra `com.gathin.tvhome.extra.WATCH_NEXT_PROGRAM_ID`. An app that
+declares no such activity gets nothing on a long press. The app looks the row up among its own, does what the person
+chooses (the `addons/seguir-viendo` add-on hides an episode, a season or a series and deletes the rows it covers) and
+finishes; the launcher reads the table again when Home comes back, so a deleted row's card is gone and focus moves to
+the next card, or to the dock when none is left.
+
 Seen on a Strong LEAP-S3 (Google TV 14): 24 Watch Next rows, from Disney+ (8), Videoland (6), Jellyfin (6) and
 Netflix (4); seven passed the filters.

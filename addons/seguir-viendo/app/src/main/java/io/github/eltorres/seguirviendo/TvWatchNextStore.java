@@ -28,6 +28,29 @@ final class TvWatchNextStore implements WatchNextStore {
         for (long id : ownRows(sourceId)) resolver.delete(TvContract.buildWatchNextProgramUri(id), null, null);
     }
 
+    @Override
+    public List<PublishedRow> published() {
+        List<PublishedRow> rows = new ArrayList<>();
+        String[] projection = {WatchNextPrograms._ID, WatchNextPrograms.COLUMN_INTERNAL_PROVIDER_ID,
+                WatchNextPrograms.COLUMN_PACKAGE_NAME, WatchNextPrograms.COLUMN_INTERNAL_PROVIDER_DATA,
+                WatchNextPrograms.COLUMN_TITLE};
+        try (Cursor cursor = resolver.query(WatchNextPrograms.CONTENT_URI, projection, null, null, null)) {
+            if (cursor == null) return rows;
+            while (cursor.moveToNext()) {
+                if (!WatchNextMapper.PACKAGE.equals(cursor.getString(2))) continue;
+                PublishedRow row = WatchNextMapper.published(cursor.getLong(0), cursor.getString(1),
+                        cursor.isNull(3) ? null : cursor.getBlob(3), cursor.getString(4));
+                if (row != null) rows.add(row);
+            }
+        }
+        return rows;
+    }
+
+    @Override
+    public void delete(long rowId) {
+        resolver.delete(TvContract.buildWatchNextProgramUri(rowId), null, null);
+    }
+
     private List<Long> ownRows(String sourceId) {
         List<Long> ids = new ArrayList<>();
         String[] projection = {WatchNextPrograms._ID, WatchNextPrograms.COLUMN_INTERNAL_PROVIDER_ID,
@@ -47,6 +70,7 @@ final class TvWatchNextStore implements WatchNextStore {
         for (Map.Entry<String, Object> column : WatchNextMapper.columns(item, item.posterUri()).entrySet()) {
             Object value = column.getValue();
             if (value instanceof Integer) values.put(column.getKey(), (Integer) value);
+            else if (value instanceof byte[]) values.put(column.getKey(), (byte[]) value);
             else if (value instanceof Long) values.put(column.getKey(), (Long) value);
             else values.put(column.getKey(), String.valueOf(value));
         }

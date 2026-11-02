@@ -67,6 +67,7 @@ The launcher's own page has these rows, top to bottom:
   clears them too.
 - **Continue watching** on or off: the row of Watch Next titles above the dock ([watch-next.md](watch-next.md)).
   It starts from `continue_watching` in `config.xml` (off), and neither Follow theme nor a theme push changes it.
+  Holding OK on a card opens the options of the app that published it, if it has any ([watch-next.md](watch-next.md)).
 - **Choose default home** opens Android's home picker, and **TV system settings** the TV's own settings
   page.
 

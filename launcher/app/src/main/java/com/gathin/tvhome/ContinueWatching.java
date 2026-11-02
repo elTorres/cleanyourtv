@@ -50,15 +50,18 @@ final class ContinueWatching {
         final String intentUri;
         final float progress;      // 0..1, or -1 when the app gives no position
         final String posterUri;    // local posters only; null: the app's banner
+        final long programId;
         Bitmap poster;             // filled in by loadPoster, off the main thread
 
-        Item(String pkg, String title, String subtitle, String intentUri, float progress, String posterUri) {
+        Item(String pkg, String title, String subtitle, String intentUri, float progress, String posterUri,
+             long programId) {
             this.pkg = pkg;
             this.title = title;
             this.subtitle = subtitle;
             this.intentUri = intentUri;
             this.progress = progress;
             this.posterUri = posterUri;
+            this.programId = programId;
         }
     }
 
@@ -74,9 +77,11 @@ final class ContinueWatching {
         final long positionMs;
         final long durationMs;
         final int type;            // TvContract.WatchNextPrograms.WATCH_NEXT_TYPE_*, or -1
+        final long programId;
 
         ContinueEntry(String pkg, String title, String subtitle, String intentUri, String posterUri,
-                      boolean browsable, long engagedMs, long positionMs, long durationMs, int type) {
+                      boolean browsable, long engagedMs, long positionMs, long durationMs, int type,
+                      long programId) {
             this.pkg = pkg;
             this.title = title;
             this.subtitle = subtitle;
@@ -87,6 +92,7 @@ final class ContinueWatching {
             this.positionMs = positionMs;
             this.durationMs = durationMs;
             this.type = type;
+            this.programId = programId;
         }
 
         float progress() {
@@ -99,6 +105,9 @@ final class ContinueWatching {
 
     /** Launcher settings' Continue watching switch, kept with the other on-TV choices; a theme push leaves it. */
     static final String CHOICE_KEY = "continue_watching";
+
+    static final String OPTIONS_ACTION = "com.gathin.tvhome.action.CONTINUE_WATCHING_OPTIONS";
+    static final String EXTRA_PROGRAM_ID = "com.gathin.tvhome.extra.WATCH_NEXT_PROGRAM_ID";
 
     private ContinueWatching() {
     }
@@ -140,7 +149,8 @@ final class ContinueWatching {
                         lng(c, TvContract.WatchNextPrograms.COLUMN_LAST_ENGAGEMENT_TIME_UTC_MILLIS, 0),
                         lng(c, TvContract.WatchNextPrograms.COLUMN_LAST_PLAYBACK_POSITION_MILLIS, 0),
                         lng(c, TvContract.WatchNextPrograms.COLUMN_DURATION_MILLIS, 0),
-                        (int) lng(c, TvContract.WatchNextPrograms.COLUMN_WATCH_NEXT_TYPE, -1)));
+                        (int) lng(c, TvContract.WatchNextPrograms.COLUMN_WATCH_NEXT_TYPE, -1),
+                        lng(c, TvContract.WatchNextPrograms._ID, -1)));
             }
         } catch (Exception e) {
             // SecurityException without READ_TV_LISTINGS, or a provider that is missing or broken.
@@ -152,7 +162,7 @@ final class ContinueWatching {
         List<Item> items = new ArrayList<>();
         for (ContinueEntry row : filter(rows, System.currentTimeMillis(), allowed)) {
             Item item = new Item(row.pkg, row.title, row.subtitle, row.intentUri, row.progress(),
-                    isLocal(row.posterUri) ? row.posterUri : null);
+                    isLocal(row.posterUri) ? row.posterUri : null, row.programId);
             item.poster = cached(item.posterUri);
             items.add(item);
         }
@@ -270,6 +280,17 @@ final class ContinueWatching {
         if (i == null) i = pm.getLaunchIntentForPackage(item.pkg);
         if (i != null) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return i;
+    }
+
+    static int focusAfter(int lastIndex, int count) {
+        return count == 0 ? -1 : Math.max(0, Math.min(lastIndex, count - 1));
+    }
+
+    static Intent optionsIntent(Context context, Item item) {
+        if (item.programId < 0) return null;
+        Intent i = new Intent(OPTIONS_ACTION).setPackage(item.pkg).putExtra(EXTRA_PROGRAM_ID, item.programId);
+        if (i.resolveActivity(context.getPackageManager()) == null) return null;
+        return i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     /** Only the app that published the row: an intent_uri pointing elsewhere is not followed. */

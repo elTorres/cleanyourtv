@@ -2,6 +2,9 @@ package com.gathin.tvhome;
 
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +25,7 @@ public class ContinueWatchingTest {
     private static ContinueWatching.ContinueEntry row(String pkg, String title, long ageMs, int type,
                                                       long positionMs, long durationMs) {
         return new ContinueWatching.ContinueEntry(pkg, title, "", null, null, true, NOW - ageMs,
-                positionMs, durationMs, type);
+                positionMs, durationMs, type, 1);
     }
 
     private static ContinueWatching.ContinueEntry row(String title, long ageMs) {
@@ -53,9 +56,9 @@ public class ContinueWatchingTest {
     @Test
     public void keepsNewestRowPerShow() {
         ContinueWatching.ContinueEntry older = new ContinueWatching.ContinueEntry("com.stremio.one", "The Bear",
-                "S3 · E1", null, null, true, NOW - 5 * DAY, 0, 0, TYPE_NEXT);
+                "S3 · E1", null, null, true, NOW - 5 * DAY, 0, 0, TYPE_NEXT, 1);
         ContinueWatching.ContinueEntry newer = new ContinueWatching.ContinueEntry("com.stremio.one", "The Bear",
-                "S3 · E2", null, null, true, NOW - DAY, 0, 0, TYPE_NEXT);
+                "S3 · E2", null, null, true, NOW - DAY, 0, 0, TYPE_NEXT, 1);
         List<ContinueWatching.ContinueEntry> shown = ContinueWatching.filter(List.of(older, newer), NOW, ALL);
         assertEquals(1, shown.size());
         assertEquals("S3 · E2", shown.get(0).subtitle);
@@ -93,7 +96,7 @@ public class ContinueWatchingTest {
     public void emptyInputHidesRow() {
         assertTrue(ContinueWatching.filter(List.of(), NOW, ALL).isEmpty());
         ContinueWatching.ContinueEntry hidden = new ContinueWatching.ContinueEntry("com.stremio.one", "Hidden",
-                "", null, null, false, NOW, 0, 0, TYPE_NEXT);
+                "", null, null, false, NOW, 0, 0, TYPE_NEXT, 1);
         assertTrue(ContinueWatching.filter(List.of(hidden, row("", DAY)), NOW, ALL).isEmpty());
     }
 
@@ -102,5 +105,24 @@ public class ContinueWatchingTest {
         assertTrue(ContinueWatching.publisherOwns("com.example.publisher", "com.example.publisher"));
         assertFalse(ContinueWatching.publisherOwns("com.example.publisher", "com.stremio.one"));
         assertFalse(ContinueWatching.publisherOwns("com.example.publisher", null));
+    }
+
+    @Test
+    public void optionsActionIsQueriedInTheManifest() throws Exception {
+        String manifest = new String(Files.readAllBytes(Paths.get("src/main/AndroidManifest.xml")), StandardCharsets.UTF_8);
+        String queries = manifest.substring(manifest.indexOf("<queries>"), manifest.indexOf("</queries>"));
+        assertTrue(queries.contains("<action android:name=\"" + ContinueWatching.OPTIONS_ACTION + "\" />"));
+    }
+
+    @Test
+    public void focusStaysAtPositionOrPrevious() {
+        assertEquals(1, ContinueWatching.focusAfter(1, 2));
+        assertEquals(1, ContinueWatching.focusAfter(2, 2));
+        assertEquals(0, ContinueWatching.focusAfter(0, 3));
+    }
+
+    @Test
+    public void focusGoesToDockWhenRowEmpties() {
+        assertEquals(-1, ContinueWatching.focusAfter(0, 0));
     }
 }

@@ -34,7 +34,7 @@ public class SyncServiceTest {
         store.rows.put("trakt", List.of(item("trakt", "old")));
         store.rows.put("movistar", List.of(item("movistar", "kept")));
         SyncService sync = new SyncService(List.of(source("trakt", () -> List.of(item("trakt", "new")))),
-                store, NO_POSTERS, () -> 42L);
+                store, NO_POSTERS, new MemoryHiddenStore(), () -> 42L);
         SyncReport report = sync.sync("trakt");
         assertEquals(SyncReport.Outcome.UPDATED, report.outcome("trakt"));
         assertEquals("new", store.rows.get("trakt").get(0).itemKey());
@@ -48,7 +48,7 @@ public class SyncServiceTest {
         store.rows.put("trakt", List.of(item("trakt", "previous")));
         SyncService sync = new SyncService(List.of(
                 source("trakt", () -> { throw new IOException("offline"); }),
-                source("movistar", () -> List.of(item("movistar", "fresh")))), store, NO_POSTERS, () -> 1L);
+                source("movistar", () -> List.of(item("movistar", "fresh")))), store, NO_POSTERS, new MemoryHiddenStore(), () -> 1L);
         SyncReport report = sync.syncAll();
         assertEquals(SyncReport.Outcome.NETWORK_ERROR, report.outcome("trakt"));
         assertEquals("previous", store.rows.get("trakt").get(0).itemKey());
@@ -66,10 +66,22 @@ public class SyncServiceTest {
         MemoryWatchNextStore store = new MemoryWatchNextStore();
         store.rows.put("trakt", List.of(item("trakt", "previous")));
         SyncService sync = new SyncService(List.of(new TraktSource(auth, http, () -> "com.stremio.one", () -> 0L)),
-                store, NO_POSTERS, () -> 1L);
+                store, NO_POSTERS, new MemoryHiddenStore(), () -> 1L);
         assertEquals(SyncReport.Outcome.RECONNECT_NEEDED, sync.syncAll().outcome("trakt"));
         assertEquals(SourceState.RECONNECT_NEEDED, auth.state());
         assertEquals("previous", store.rows.get("trakt").get(0).itemKey());
         assertTrue(http.requests.get(0).endsWith("/sync/playback?extended=full"));
+    }
+
+    @Test
+    public void hiddenItemsAreNotPublished() {
+        MemoryWatchNextStore store = new MemoryWatchNextStore();
+        MemoryHiddenStore hidden = new MemoryHiddenStore();
+        hidden.add(HiddenItems.key("trakt", "gone", "gone", null, HideScope.EPISODE));
+        SyncService sync = new SyncService(List.of(source("trakt",
+                () -> List.of(item("trakt", "gone"), item("trakt", "kept")))), store, NO_POSTERS, hidden, () -> 1L);
+        sync.syncAll();
+        assertEquals(1, store.rows.get("trakt").size());
+        assertEquals("kept", store.rows.get("trakt").get(0).itemKey());
     }
 }

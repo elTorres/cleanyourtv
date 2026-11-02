@@ -25,4 +25,9 @@
     <string name="movistar_profile">Perfil</string>
     <string name="connect">Conectar</string>
     <string name="cancel">Cancelar</string>
+    <string name="hide_episode">Ocultar este episodio</string>
+    <string name="hide_season">Ocultar la temporada %1$d</string>
+    <string name="hide_show">Ocultar la serie</string>
+    <string name="hide_title">No mostrar más</string>
+    <string name="entry_gone">Esta entrada ya no está en Seguir viendo</string>
 </resources>

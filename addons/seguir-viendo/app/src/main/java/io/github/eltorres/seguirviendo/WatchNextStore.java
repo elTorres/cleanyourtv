@@ -6,4 +6,8 @@ interface WatchNextStore {
     void replaceSource(String sourceId, List<ViewingItem> items);
 
     void clearSource(String sourceId);
+
+    List<PublishedRow> published();
+
+    void delete(long rowId);
 }
