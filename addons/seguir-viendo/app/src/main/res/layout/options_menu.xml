@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:id="@+id/panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="200dp"
+        android:orientation="vertical"
+        android:background="@drawable/menu_panel"
+        android:padding="6dp"
+        android:elevation="12dp"
+        android:visibility="invisible" />
+</merge>
