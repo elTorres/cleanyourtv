@@ -50,6 +50,7 @@ final class ContinueRow extends LinearLayout {
 
     static final int CARD_W_DP = 160, CARD_H_DP = 90;
     private static final float FOCUS_SCALE = 1.08f;
+    private static final int ZOOM_ROOM_DP = 12;
 
     private final Host host;
     private final float density;
@@ -94,7 +95,7 @@ final class ContinueRow extends LinearLayout {
         cards.setClipChildren(false);
         cards.setClipToPadding(false);
         // Room for the focused card's zoom on every side, so the scroller does not clip it.
-        int pad = dp(12);
+        int pad = dp(ZOOM_ROOM_DP);
         cards.setPadding(pad, pad, pad, pad);
         scroller.addView(cards, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         addView(scroller, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -281,6 +282,8 @@ final class ContinueRow extends LinearLayout {
             // the glass and the title back.
             if (focused) {
                 lastIndex = index;
+                int room = dp(ZOOM_ROOM_DP);
+                v.requestRectangleOnScreen(new Rect(-room, 0, v.getWidth() + room, v.getHeight()));
                 host.onRowFocused();
             }
         });
