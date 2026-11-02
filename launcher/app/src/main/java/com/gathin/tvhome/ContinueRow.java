@@ -1,12 +1,14 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -148,10 +150,11 @@ final class ContinueRow extends LinearLayout {
             cards.addView(card, lp);
             cardViews.add(card);
         }
-        lastIndex = Math.min(lastIndex, Math.max(0, cardViews.size() - 1));
+        int focus = ContinueWatching.focusAfter(lastIndex, cardViews.size());
+        lastIndex = Math.max(0, focus);
         applyVisibility();
         if (hadFocus) {
-            if (hasItems()) focusCard();
+            if (focus >= 0) focusCard();
             else host.onRowDown();
         }
     }
@@ -281,6 +284,10 @@ final class ContinueRow extends LinearLayout {
             }
         });
         card.setOnClickListener(v -> host.onRowOpen(item));
+        card.setOnLongClickListener(v -> {
+            openOptions(item);
+            return true;
+        });
         card.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) {
                 return keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN;
@@ -303,6 +310,16 @@ final class ContinueRow extends LinearLayout {
             }
         });
         return card;
+    }
+
+    private void openOptions(ContinueWatching.Item item) {
+        Intent options = ContinueWatching.optionsIntent(getContext(), item);
+        if (options == null) return;
+        try {
+            getContext().startActivity(options);
+        } catch (RuntimeException e) {
+            Log.w(ContinueWatching.TAG, "could not open the options of " + item.pkg + ": " + e);
+        }
     }
 
     private TextView label(String s, int sp, int color, int font) {

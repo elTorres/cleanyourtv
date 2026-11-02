@@ -5,18 +5,22 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.LongSupplier;
 
 final class SyncService {
     private final List<ViewingSource> sources;
     private final WatchNextStore store;
     private final Posters posters;
+    private final HiddenStore hidden;
     private final LongSupplier clock;
 
-    SyncService(List<ViewingSource> sources, WatchNextStore store, Posters posters, LongSupplier clock) {
+    SyncService(List<ViewingSource> sources, WatchNextStore store, Posters posters, HiddenStore hidden,
+                LongSupplier clock) {
         this.sources = sources;
         this.store = store;
         this.posters = posters;
+        this.hidden = hidden;
         this.clock = clock;
     }
 
@@ -44,7 +48,7 @@ final class SyncService {
     private SyncReport.Outcome syncOne(ViewingSource source, List<ViewingItem> published) {
         if (source.state() != SourceState.CONNECTED) return SyncReport.Outcome.SKIPPED;
         try {
-            List<ViewingItem> items = posters.attach(source.fetch());
+            List<ViewingItem> items = posters.attach(visible(source.fetch()));
             store.replaceSource(source.id(), items);
             published.addAll(items);
             return SyncReport.Outcome.UPDATED;
@@ -53,5 +57,14 @@ final class SyncService {
         } catch (IOException e) {
             return SyncReport.Outcome.NETWORK_ERROR;
         }
+    }
+
+    private List<ViewingItem> visible(List<ViewingItem> fetched) {
+        Set<String> keys = hidden.keys();
+        List<ViewingItem> visible = new ArrayList<>();
+        for (ViewingItem item : fetched) {
+            if (!HiddenItems.hides(keys, item)) visible.add(item);
+        }
+        return visible;
     }
 }

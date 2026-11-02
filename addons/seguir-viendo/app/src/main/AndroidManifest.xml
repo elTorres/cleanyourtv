@@ -40,6 +40,18 @@
             android:screenOrientation="landscape"
             android:taskAffinity="" />
 
+        <activity
+            android:name=".OptionsActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:taskAffinity=""
+            android:theme="@style/Options">
+            <intent-filter>
+                <action android:name="com.gathin.tvhome.action.CONTINUE_WATCHING_OPTIONS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".SyncJobService"
             android:exported="false"

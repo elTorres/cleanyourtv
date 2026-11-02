@@ -48,4 +48,32 @@ public class WatchNextMapperTest {
         assertFalse(WatchNextMapper.belongsTo("movistar:1", "trakt"));
         assertFalse(WatchNextMapper.belongsTo(null, "trakt"));
     }
+
+    @Test
+    public void storesShowKeyInProviderData() {
+        ViewingItem item = episode(null);
+        byte[] data = (byte[]) WatchNextMapper.columns(item, null).get(WatchNextPrograms.COLUMN_INTERNAL_PROVIDER_DATA);
+        PublishedRow row = WatchNextMapper.published(9, WatchNextMapper.providerId(item), data, item.title());
+        assertEquals(9, row.id());
+        assertEquals("trakt", row.sourceId());
+        assertEquals("episode:1", row.itemKey());
+        assertEquals("show:1", row.showKey());
+        assertEquals(Integer.valueOf(2), row.season());
+        assertEquals(Integer.valueOf(6), row.episode());
+    }
+
+    @Test
+    public void episodeWithoutSeasonKeepsItsNumber() {
+        ViewingItem item = new ViewingItem("movistar", "content:4", "show:9", ViewingKind.NEXT, "Lupin", null, null, 4,
+                0, 0, 1, null, new OpenTarget("com.movistarplus.androidtv", null));
+        PublishedRow row = WatchNextMapper.published(1, WatchNextMapper.providerId(item),
+                WatchNextMapper.providerData(item), item.title());
+        assertEquals(null, row.season());
+        assertEquals(Integer.valueOf(4), row.episode());
+    }
+
+    @Test
+    public void rowsFromBeforeTheShowKeyAreSkipped() {
+        assertEquals(null, WatchNextMapper.published(1, "trakt:episode:1", null, "The Bear"));
+    }
 }

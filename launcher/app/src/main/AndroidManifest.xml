@@ -71,6 +71,9 @@
         <!-- Coocaa OS sources for the Inputs menu (coocaa_sources); see CoocaaSources. -->
         <provider android:authorities="com.skyworth.tv.provider" />
         <provider android:authorities="com.skyworth.tv.sdk.provider" />
+        <intent>
+            <action android:name="com.gathin.tvhome.action.CONTINUE_WATCHING_OPTIONS" />
+        </intent>
     </queries>
 
     <application

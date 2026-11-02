@@ -28,4 +28,9 @@
     <string name="movistar_profile">Profile</string>
     <string name="connect">Connect</string>
     <string name="cancel">Cancel</string>
+    <string name="hide_episode">Hide this episode</string>
+    <string name="hide_season">Hide season %1$d</string>
+    <string name="hide_show">Hide the series</string>
+    <string name="hide_title">Don\'t show again</string>
+    <string name="entry_gone">This item is no longer in Continue watching</string>
 </resources>

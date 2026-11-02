@@ -11,6 +11,7 @@ final class WatchNextMapper {
     static final String TRAMPOLINE = PACKAGE + "/.TrampolineActivity";
     static final String EXTRA_TARGET = "target";
     static final String EXTRA_LINK = "link";
+    private static final String DATA_SEPARATOR = "\n";
 
     private WatchNextMapper() {
     }
@@ -39,10 +40,38 @@ final class WatchNextMapper {
         if (item.durationMs() > 0) row.put(WatchNextPrograms.COLUMN_DURATION_MILLIS, item.durationMs());
         row.put(WatchNextPrograms.COLUMN_LAST_ENGAGEMENT_TIME_UTC_MILLIS, item.lastEngagedMs());
         row.put(WatchNextPrograms.COLUMN_INTERNAL_PROVIDER_ID, providerId(item));
+        row.put(WatchNextPrograms.COLUMN_INTERNAL_PROVIDER_DATA, providerData(item));
         row.put(WatchNextPrograms.COLUMN_SEARCHABLE, 1);
         row.put(WatchNextPrograms.COLUMN_INTENT_URI, intentUri(item.target()));
         if (posterUri != null) row.put(WatchNextPrograms.COLUMN_POSTER_ART_URI, posterUri);
         return row;
+    }
+
+    static byte[] providerData(ViewingItem item) {
+        return String.join(DATA_SEPARATOR, item.showKey(), text(item.season()), text(item.episode()))
+                .getBytes(StandardCharsets.UTF_8);
+    }
+
+    static PublishedRow published(long id, String providerId, byte[] providerData, String title) {
+        if (providerId == null || providerData == null) return null;
+        int split = providerId.indexOf(':');
+        if (split <= 0) return null;
+        String[] data = new String(providerData, StandardCharsets.UTF_8).split(DATA_SEPARATOR, -1);
+        if (data.length != 3) return null;
+        return new PublishedRow(id, providerId.substring(0, split), providerId.substring(split + 1), data[0], title,
+                number(data[1]), number(data[2]));
+    }
+
+    private static String text(Integer value) {
+        return value == null ? "" : Integer.toString(value);
+    }
+
+    private static Integer number(String value) {
+        try {
+            return value.isEmpty() ? null : Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     static String intentUri(OpenTarget target) {

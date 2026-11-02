@@ -18,6 +18,7 @@ final class Services {
     final boolean tmdbPosters;
     final SyncService sync;
     final SourcesService sources;
+    final HideService hide;
 
     private Services(Context context) {
         Http http = new UrlConnectionHttp();
@@ -40,7 +41,9 @@ final class Services {
                 new RoutedArtwork(artwork));
         WatchNextStore store = new TvWatchNextStore(context.getContentResolver());
         MovistarSource movistar = new MovistarSource(movistarAuth, http, System::currentTimeMillis);
-        sync = new SyncService(List.of(trakt, movistar), store, posters, System::currentTimeMillis);
+        HiddenStore hidden = new PrefsHiddenStore(context);
+        sync = new SyncService(List.of(trakt, movistar), store, posters, hidden, System::currentTimeMillis);
+        hide = new HideService(store, hidden);
         sources = new SourcesService(Map.of(TraktPlayback.SOURCE_ID, traktAuth::disconnect,
                 MovistarAuth.SOURCE_ID, movistarAuth::disconnect), store, settings);
     }
