@@ -23,11 +23,11 @@ Nada de lo que está aquí se envía a upstream salvo que se diga lo contrario e
 | Archivos locales de editor fuera de git | `.gitignore` (`.vscode/`, `.claude/settings.local.json`) | Hecho |
 | Fila "Seguir viendo" en Home, desactivada por defecto en `config.xml`, con interruptor en los ajustes del launcher y la lista `continue_watching_apps` | `launcher/`, `docs/watch-next.md`, `docs/launcher.md` | Hecho |
 | Add-on que publica en Watch Next lo que está a medias en Trakt | `addons/seguir-viendo/` | Hecho |
-| Siguiente episodio, pósters, deep link de Stremio y sincronización automática | `addons/seguir-viendo/` | Pendiente |
-| Fuente Movistar Plus | `addons/seguir-viendo/` | Pendiente |
+| Siguiente episodio, pósters, deep link de Stremio y sincronización automática | `addons/seguir-viendo/` | Hecho |
+| Fuente Movistar Plus | `addons/seguir-viendo/` | Hecho |
 | Ocultar elementos de "Seguir viendo" con pulsación larga (episodio, temporada, serie o película) y restablecerlos desde el add-on; el launcher solo abre las opciones de la app que publicó la entrada | `launcher/`, `addons/seguir-viendo/`, `docs/watch-next.md`, `docs/launcher.md` | Hecho |
 
-El plan completo está en `openspec/changes/seguir-viendo-fork-trakt-movistar/`.
+Los planes están archivados en `openspec/changes/archive/2026-11-02-seguir-viendo-fork-trakt-movistar/` y `openspec/changes/archive/2026-11-02-ocultar-elementos-de-seguir-viendo/`, y sus requisitos en `openspec/specs/`.
 
 ## Remotos
 
