@@ -16,8 +16,11 @@ El sistema SHALL conectar la cuenta de Movistar Plus con el usuario y la clave i
 ### Requirement: Sin ocupar plazas de dispositivo sin aviso
 El sistema SHALL NOT dar de alta un dispositivo en la cuenta de Movistar Plus sin avisar antes a la persona y obtener su confirmación.
 
+#### Scenario: Dispositivo ya registrado
+- Given una cuenta con al menos un dispositivo registrado, when la persona conecta la fuente, then el add-on le deja elegir uno de esos dispositivos y lo usa sin dar de alta ninguno nuevo
+
 #### Scenario: Alta necesaria
-- Given que leer las reproducciones exige un dispositivo registrado, when la persona conecta la fuente, then el add-on explica que ocupará una plaza de dispositivo y solo la ocupa si la persona acepta
+- Given que leer las reproducciones exige un dispositivo registrado y la cuenta no tiene ninguno, when la persona conecta la fuente, then el add-on explica que ocupará una plaza de dispositivo y solo la ocupa si la persona acepta
 
 ### Requirement: Perfil seleccionado
 El sistema SHALL leer las reproducciones del perfil de Movistar Plus elegido por la persona, el principal por defecto.

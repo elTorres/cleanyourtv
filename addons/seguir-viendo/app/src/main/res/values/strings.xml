@@ -18,4 +18,14 @@
     <string name="target_app">Open in: %1$s</string>
     <string name="posters_on">Artwork from TMDB</string>
     <string name="posters_off">No artwork: add tmdb.apiKey to local.properties</string>
+    <string name="movistar" translatable="false">Movistar Plus</string>
+    <string name="movistar_connect">Connect Movistar Plus</string>
+    <string name="movistar_user">User</string>
+    <string name="movistar_password">Password</string>
+    <string name="movistar_bad_password">Wrong user or password</string>
+    <string name="movistar_device_warning">Movistar Plus will count this add-on as one more device on your account. Continue?</string>
+    <string name="movistar_device">Account device the add-on will use</string>
+    <string name="movistar_profile">Profile</string>
+    <string name="connect">Connect</string>
+    <string name="cancel">Cancel</string>
 </resources>

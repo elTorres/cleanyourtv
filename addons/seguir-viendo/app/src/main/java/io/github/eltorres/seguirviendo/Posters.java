@@ -23,10 +23,6 @@ final class Posters {
         return tmdbId == null ? null : "tmdb:" + type + ":" + tmdbId;
     }
 
-    boolean available() {
-        return lookup != null;
-    }
-
     List<ViewingItem> attach(List<ViewingItem> items) {
         List<ViewingItem> out = new ArrayList<>(items.size());
         for (ViewingItem item : items) {

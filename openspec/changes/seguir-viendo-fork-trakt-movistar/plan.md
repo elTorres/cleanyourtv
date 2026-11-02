@@ -16,7 +16,7 @@ implemented_by:
     name: "Claude Opus"
     version: "5.5"
     reasoning_effort: "low"
-last_implementation_at: "2026-10-29T21:30:00Z"
+last_implementation_at: "2026-11-02T19:45:05Z"
 ---
 
 # Seguir viendo en Home con Trakt y Movistar Plus
@@ -49,6 +49,9 @@ Ver en Home lo que la persona tiene a medias en Stremio, en Kodi de otro disposi
 - El id de cada imagen es un SHA-256 truncado de su referencia (`tmdb:tv:<id>`), así que se reutiliza entre sincronizaciones sin volver a descargarla. Los pósters huérfanos se borran solo cuando todas las fuentes conectadas se han actualizado, para no borrar los de una fuente que ha fallado y conserva sus filas.
 - Movistar Plus usa la API no oficial descrita en `Paco8/plugin.video.movistarplus` (GPL-2.0). Ese plugin sirve solo como referencia del protocolo: no se copia ni se traduce su código, para que el add-on pueda seguir con licencia MIT.
 - Antes de implementar Movistar Plus se hace un spike para responder tres preguntas: si leer `viewings` exige registrar un dispositivo, si hay `refresh_token` y qué deep link acepta la app oficial. La clave solo se guarda (cifrada) si no hay forma de renovar la sesión sin ella.
+- El spike (`addons/seguir-viendo/docs/movistar.md`) descarta la API de la app de TV, que firma cada petición con claves ofuscadas en la app oficial, y usa la del reproductor web, que no las firma (la misma que Paco8). El login es con usuario y clave en `auth.dof6.com`, y el token dura 10 días sin `refresh_token`, así que la clave se guarda cifrada en `SecretStore` para volver a entrar sin la persona.
+- `viewings` exige el token de sesión de `initData`, que necesita un dispositivo registrado. El add-on reutiliza uno que ya esté registrado en la cuenta y que elige la persona (en lugar de ocupar una plaza nueva), y solo da de alta uno nuevo si no hay ninguno, con aviso previo.
+- Los elementos de Movistar Plus abren `com.movistarplus.androidtv` con `appmovistar://movistarplus.es/ficha?id=<Id>`, comprobado en la TV con la versión 26.06.103.
 - Fuera del alcance: el "reproduciendo ahora" por MediaSession o `ContentPlaying`, hacer scrobbling de Movistar a Trakt, leer el canal de preview de Stremio, abrir un issue o PR en Gathin23 o una fila en su `SHOWCASE.md`, workflows de CI de releases y cualquier cambio en el guard de Home o en las reglas de seguridad.
 
 ## Fases
@@ -223,7 +226,7 @@ La fila incluye las últimas reproducciones de Movistar Plus del perfil elegido 
 
 ```java
 // Servicios de aplicación (add-on)
-final class MovistarAuth { LoginResult login(String user, String password) throws IOException; List<Profile> profiles() throws IOException, AuthException; void selectProfile(String profileId); boolean deviceRegistrationRequired(); void registerDevice() throws IOException; void refreshIfNeeded() throws IOException, AuthException; }
+final class MovistarAuth { LoginResult login(String user, String password) throws IOException; List<Profile> profiles() throws IOException, AuthException; void selectProfile(String profileId); List<Device> devices() throws IOException, AuthException; void selectDevice(String deviceId); void registerDevice() throws IOException; void refreshIfNeeded() throws IOException, AuthException; }
 final class MovistarSource implements ViewingSource { }
 ```
 
@@ -233,6 +236,7 @@ final class MovistarSource implements ViewingSource { }
 <string name="movistar_bad_password">Usuario o clave no válidos</string>
 <string name="movistar_device_warning">Movistar Plus contará este add-on como un dispositivo más de tu cuenta. ¿Continuar?</string>
 <string name="movistar_profile">Perfil</string>
+<string name="movistar_device">Dispositivo de la cuenta que usará el add-on</string>
 ```
 
 #### Tests
@@ -240,6 +244,7 @@ final class MovistarSource implements ViewingSource { }
 - `addons/seguir-viendo/app/src/test/.../MovistarAuthTest`
   - validLoginConnects (Conexión correcta)
   - badPasswordStoresNothing (Clave incorrecta)
+  - reusesARegisteredDevice (Dispositivo ya registrado)
   - registrationAsksBeforeTakingADeviceSlot (Alta necesaria)
   - rejectedRefreshMarksReconnectNeeded (Clave cambiada)
 - `addons/seguir-viendo/app/src/test/.../MovistarViewingsParserTest`
@@ -248,13 +253,13 @@ final class MovistarSource implements ViewingSource { }
 - `addons/seguir-viendo/app/src/test/.../TrampolineTest`
   - opensOfficialMovistarApp (Abrir elemento)
 
-- [ ] Spike en la TV con la cuenta real: comprobar si `ultimasreproducciones` responde sin registrar dispositivo, si el token tiene `refresh_token` o caducidad renovable, y qué paquete y deep link usa la app oficial (`dumpsys package` de la app instalada). Anotar los resultados en `addons/seguir-viendo/docs/movistar.md`, sin datos de la cuenta.
-- [ ] Implementar `MovistarAuth` según el spike (la clave cifrada en `SecretStore` solo si no hay renovación sin ella) y la pantalla de conexión con la selección de perfil y el aviso de dispositivo.
-- [ ] Implementar `MovistarSource` sobre `viewings` con `container=trackedseries`, con fixtures JSON anonimizados en `app/src/test/resources`.
-- [ ] Añadir al `README.md` del add-on el aviso de API no oficial, la nota de procedencia del protocolo y lo que guarda en la TV.
-- [ ] Probar en la TV: ver a medias un episodio en la app oficial, sincronizar, comprobar la entrada en la fila y que se abre Movistar Plus.
-- [ ] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
+- [x] Spike en la TV con la cuenta real: comprobar si `ultimasreproducciones` responde sin registrar dispositivo, si el token tiene `refresh_token` o caducidad renovable, y qué paquete y deep link usa la app oficial (`dumpsys package` de la app instalada). Anotar los resultados en `addons/seguir-viendo/docs/movistar.md`, sin datos de la cuenta. Hecho: las reproducciones necesitan un dispositivo registrado, pero vale uno que ya lo esté; no hay `refresh_token` y el token dura 10 días; la app es `com.movistarplus.androidtv` y abre `appmovistar://movistarplus.es/ficha?id=<Id>`.
+- [x] Implementar `MovistarAuth` según el spike (la clave cifrada en `SecretStore` solo si no hay renovación sin ella) y la pantalla de conexión con la selección de perfil y el aviso de dispositivo. Como no hay renovación, la clave se guarda cifrada y el add-on vuelve a entrar un día antes de que caduque el token; un 401 con el token vigente lo descarta y la siguiente sincronización vuelve a entrar. La pantalla pide usuario y clave, deja elegir un dispositivo ya registrado (o avisa antes de dar de alta uno si no hay ninguno) y después el perfil.
+- [x] Implementar `MovistarSource` sobre `viewings` con `container=trackedseries`, con fixtures JSON anonimizados en `app/src/test/resources`. `trackedseries` devuelve el siguiente episodio de cada serie seguida, con `Bookmark.offset` en segundos: con posición es un elemento `CONTINUE` y sin ella `NEXT`; los vistos se descartan. La respuesta no trae la hora de la última reproducción, así que se usa el orden de la lista a partir de la hora de la sincronización. La temporada sale del título («(T3)») cuando la lleva. El póster es la imagen apaisada del CDN de Movistar (`estatico.emisiondof6.com`, el único host que se descarga), sin TMDB.
+- [x] Añadir al `README.md` del add-on el aviso de API no oficial, la nota de procedencia del protocolo y lo que guarda en la TV. También documenta el permiso `APP_AUTO_START` de TCL y el envío con `tools/b64push.py`, y la fila de `addons/README.md` menciona Movistar Plus.
+- [x] Probar en la TV: ver a medias un episodio en la app oficial, sincronizar, comprobar la entrada en la fila y que se abre Movistar Plus. Probado por la persona en la TCL 55C725; las tres entradas de Movistar Plus salen antes que las de Trakt.
+- [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
 
 ## Siguiente paso
 
-Ejecuta `/openspec-apply-change` para implementar la Fase 3: la fuente Movistar Plus, empezando por el spike en la TV con la cuenta real (registro de dispositivo, renovación del token y deep link de la app oficial).
+Las cuatro fases están implementadas. Revisa el cambio y, si todo está bien, archívalo con `/openspec-archive-change seguir-viendo-fork-trakt-movistar`.
