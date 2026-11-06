@@ -8,6 +8,9 @@
     "com.bone.android.a4v.oficial",
     "org.smarttube.stable"
   ],
+  "launch_actions": [
+    "com.tcl.tv=input:com.tcl.tvinput/.TDTVInputService/HW1413742848"
+  ],
   "app_labels": [
     "com.tcl.tv=TV",
     "com.movistarplus.androidtv=Movistar+",
