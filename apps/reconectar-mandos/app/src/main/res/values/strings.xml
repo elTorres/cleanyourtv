@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Reconnect remotes</string>
-    <string name="intro">Some Bluetooth remotes stop working over Bluetooth after the TV is switched off: the TV keeps them paired but no longer lets them connect. Tick those remotes here. When you press a key on one of them, this app pairs it again and the TV connects it.</string>
+    <string name="intro">Some Bluetooth remotes stop working over Bluetooth after the TV is switched off: the TV keeps them paired but no longer hears them. Tick those remotes here. For 10 minutes after the TV starts, after one of them disconnects or after you open this app, it keeps the TV listening, so it connects the remote as soon as you press a key. If it still does not connect after 10 seconds of presses, the app pairs it again. Remote with no batteries? Put them in and open this app, or pair it again with its key combination.</string>
     <string name="remotes_title">Bluetooth remotes</string>
     <string name="no_le_devices">No Bluetooth low energy devices are paired with this TV. Pair the remote once in Settings, then come back.</string>
     <string name="remote_connected">Connected</string>
@@ -16,6 +16,9 @@
     <string name="missing_location_permission">Allow location: Android only shows Bluetooth devices to an app that may use location. The app never reads where the TV is.</string>
     <string name="missing_location_off">Turn on location in Settings &gt; Privacy &gt; Location.</string>
     <string name="missing_bluetooth_off">Turn on Bluetooth in Settings &gt; Remotes &amp; Accessories.</string>
+    <string name="reconnect_channel">Reconnecting remotes</string>
+    <string name="reconnect_notification_title">Reconnecting a remote</string>
+    <string name="reconnect_notification_text">Pairing %1$s again</string>
     <string name="allow_location">Allow location</string>
     <string name="remote_marked" translatable="false">\u2713  %1$s   %2$s</string>
     <string name="remote_not_marked" translatable="false">\u25CB  %1$s   %2$s</string>

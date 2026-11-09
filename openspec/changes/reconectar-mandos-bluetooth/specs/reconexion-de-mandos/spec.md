@@ -43,11 +43,14 @@ El sistema SHALL empezar a esperar a los mandos marcados al encender la TV, cuan
 #### Scenario: Otro mando marcado sigue conectado
 - Given el RC902 y el RC833 marcados y conectados, when el RC833 se desconecta, then la app no empieza a esperar
 
-### Requirement: Espera que no se degrada
-El sistema SHALL seguir escuchando igual mientras espera, aunque pasen horas desde que empezó la espera.
+### Requirement: Espera limitada
+El sistema SHALL dejar de esperar 10 minutos después de empezar una espera si ningún mando marcado se ha conectado, y SHALL empezar una espera nueva de 10 minutos cada vez que la persona abre la app.
 
-#### Scenario: Pulsación horas después
-- Given la TV encendida desde hace más de una hora con el RC833 marcado y sin conexión, when la persona pulsa una tecla del RC833, then el mando queda conectado en unos segundos
+#### Scenario: Mando sin pilas
+- Given la TV recién encendida con el RC833 marcado, vinculado y sin pilas, when pasan 10 minutos sin que se conecte ningún mando marcado, then la app deja de escuchar
+
+#### Scenario: Volver a esperar
+- Given la espera terminada sin conexión y el RC833 otra vez con pilas, when la persona abre la app y pulsa una tecla del RC833, then el mando queda conectado en unos segundos
 
 ### Requirement: Sin proceso permanente
 El sistema SHALL esperar los anuncios con un escaneo que conserva el propio sistema, sin mantener un servicio propio en marcha ni una notificación permanente, y SHALL usar un servicio en primer plano solo mientras dura una reconexión de respaldo.

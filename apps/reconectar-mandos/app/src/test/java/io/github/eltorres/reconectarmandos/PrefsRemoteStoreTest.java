@@ -1,6 +1,7 @@
 package io.github.eltorres.reconectarmandos;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -44,6 +45,15 @@ public class PrefsRemoteStoreTest {
         Map<String, String> decoded = PrefsRemoteStore.decode(PrefsRemoteStore.encode(marked));
 
         assertEquals("Mando del salón", decoded.get(RC902));
+    }
+
+    @Test
+    public void attemptSurvivesEncodeAndDecode() {
+        Attempt attempt = Attempt.decode(new Attempt(1_762_713_660_000L, false, "bond failed\nreason 9").encode());
+
+        assertEquals(1_762_713_660_000L, attempt.atMs());
+        assertFalse(attempt.connected());
+        assertEquals("bond failed reason 9", attempt.detail());
     }
 
     @Test

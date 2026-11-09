@@ -39,4 +39,16 @@ final class FakeBluetooth implements BluetoothPort {
     public boolean inputConnected(String address) {
         return enabled && connected.contains(address);
     }
+
+    @Override
+    public boolean removeBond(String address) {
+        return enabled && bonded.removeIf(remote -> remote.address().equals(address));
+    }
+
+    @Override
+    public boolean createBondLe(String address) {
+        if (!enabled) return false;
+        if (!bonded(address)) bonded.add(new Remote(address, address));
+        return true;
+    }
 }

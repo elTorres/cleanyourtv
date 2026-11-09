@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Reconectar mandos</string>
-    <string name="intro">Algunos mandos Bluetooth dejan de funcionar por Bluetooth tras apagar la TV: la TV los mantiene vinculados pero ya no les deja conectarse. Márcalos aquí. Cuando pulses una tecla de uno de ellos, esta app lo vuelve a vincular y la TV lo conecta.</string>
+    <string name="intro">Algunos mandos Bluetooth dejan de funcionar por Bluetooth tras apagar la TV: la TV los mantiene vinculados pero ya no los oye. Márcalos aquí. Durante 10 minutos tras encender la TV, desconectarse uno de ellos o abrir esta app, la app mantiene la TV escuchando, y la TV conecta el mando en cuanto pulsas una tecla. Si tras 10 segundos de pulsaciones sigue sin conectarse, la app lo vuelve a vincular. ¿Mando sin pilas? Pónselas y abre esta app, o vuelve a vincularlo con su combinación de teclas.</string>
     <string name="remotes_title">Mandos Bluetooth</string>
     <string name="no_le_devices">No hay dispositivos Bluetooth de baja energía vinculados a esta TV. Vincula el mando una vez en Ajustes y vuelve aquí.</string>
     <string name="remote_connected">Conectado</string>
@@ -16,5 +16,8 @@
     <string name="missing_location_permission">Permite la ubicación: Android solo muestra los dispositivos Bluetooth a una app que puede usar la ubicación. La app nunca lee dónde está la TV.</string>
     <string name="missing_location_off">Activa la ubicación en Ajustes &gt; Privacidad &gt; Ubicación.</string>
     <string name="missing_bluetooth_off">Activa el Bluetooth en Ajustes &gt; Mandos y accesorios.</string>
+    <string name="reconnect_channel">Reconexión de mandos</string>
+    <string name="reconnect_notification_title">Reconectando un mando</string>
+    <string name="reconnect_notification_text">Volviendo a vincular %1$s</string>
     <string name="allow_location">Permitir ubicación</string>
 </resources>

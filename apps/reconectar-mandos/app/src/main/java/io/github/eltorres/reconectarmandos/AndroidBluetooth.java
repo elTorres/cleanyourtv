@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 @SuppressLint("MissingPermission")
 final class AndroidBluetooth implements BluetoothPort {
     private static final int HID_HOST = 4;
+    private static final int TRANSPORT_LE = 2;
 
     private final BluetoothAdapter adapter;
     private final BluetoothProfile input;
@@ -79,5 +80,26 @@ final class AndroidBluetooth implements BluetoothPort {
     public boolean inputConnected(String address) {
         return enabled() && input != null
                 && input.getConnectionState(adapter.getRemoteDevice(address)) == BluetoothProfile.STATE_CONNECTED;
+    }
+
+    @Override
+    public boolean removeBond(String address) {
+        if (!enabled()) return false;
+        try {
+            return (Boolean) BluetoothDevice.class.getMethod("removeBond").invoke(adapter.getRemoteDevice(address));
+        } catch (ReflectiveOperationException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean createBondLe(String address) {
+        if (!enabled()) return false;
+        try {
+            return (Boolean) BluetoothDevice.class.getMethod("createBond", int.class)
+                    .invoke(adapter.getRemoteDevice(address), TRANSPORT_LE);
+        } catch (ReflectiveOperationException e) {
+            return false;
+        }
     }
 }

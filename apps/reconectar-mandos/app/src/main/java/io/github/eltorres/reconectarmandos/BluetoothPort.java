@@ -10,4 +10,8 @@ interface BluetoothPort {
     boolean bonded(String address);
 
     boolean inputConnected(String address);
+
+    boolean removeBond(String address);
+
+    boolean createBondLe(String address);
 }
