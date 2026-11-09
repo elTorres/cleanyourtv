@@ -29,9 +29,11 @@ Una app propia del fork, en `apps/reconectar-mandos/`, que mientras ningún mand
 
 - App propia con id `io.github.eltorres.reconectarmandos` en `apps/reconectar-mandos/` (elegido por el usuario), fuera de `addons/`: no es una tarjeta de módulo ni se publica en el original, así que no sigue sus reglas de add-ons (captura, fila en `addons/README.md`, sección Permissions) y la suite de Python de add-ons no la recorre. Tampoco va en el launcher, que no debe tener permisos de Bluetooth ni de ubicación.
 - Proyecto Gradle copiado de `addons/seguir-viendo/` (AGP 8.5.2, `compileSdk 34`, `minSdk 26`, `targetSdk 34`, Java 17, firma de depuración, R8 en release), con su propio `.gitignore` para `build/` y `local.properties`.
-- Permisos: `BLUETOOTH` y `BLUETOOTH_ADMIN` con `maxSdkVersion 30`, `BLUETOOTH_SCAN` y `BLUETOOTH_CONNECT` para API 31 o superior, `ACCESS_FINE_LOCATION`, `RECEIVE_BOOT_COMPLETED` y `FOREGROUND_SERVICE`. Sin `INTERNET`.
+- Permisos: `BLUETOOTH` y `BLUETOOTH_ADMIN` con `maxSdkVersion 30`, `BLUETOOTH_SCAN` y `BLUETOOTH_CONNECT` para API 31 o superior, `ACCESS_FINE_LOCATION`, `ACCESS_BACKGROUND_LOCATION`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE` y `FOREGROUND_SERVICE_CONNECTED_DEVICE`. Sin `INTERNET`.
+- `ACCESS_BACKGROUND_LOCATION` es imprescindible: Android 11 comprueba la ubicación al empezar el escaneo y, si la app está en segundo plano con la ubicación concedida solo en primer plano, mantiene el escaneo pero no le entrega ningún resultado (`appops` mostraba `FINE_LOCATION rejectTime` a la hora del arranque y todos los escaneos de segundo plano tenían "0 results"). La pantalla lo pide como un requisito más después del permiso de ubicación; en la TV se concede con `pm grant ... ACCESS_BACKGROUND_LOCATION`. Sin él la app sigue esperando, pero solo reconecta con la pantalla abierta.
 - `removeBond()` y `createBond(TRANSPORT_LE)` se llaman por reflexión, como la sonda, porque son API ocultas en Android 11. Las dos funcionan en esta TV desde una app normal (comprobado).
 - La espera es un escaneo BLE con `PendingIntent` y un `ScanFilter` por dirección, que el sistema mantiene sin proceso propio, en lugar de un servicio en primer plano. El escaneo es lo que reconecta: la conexión en segundo plano de la TV solo escucha 10 ms de cada 90 ms y, con un escaneo en marcha, la controladora escucha también en ese tiempo y capta el anuncio dirigido del mando (probado en la TV con la app abierta y, en la fase 2, cerrada).
+- El escaneo no basta para que la TV reconecte sola: lo hizo tres veces (un arranque, quitar y poner las pilas, abrir la app) y en los cuatro arranques siguientes no, aunque el mando se anunciaba miles de veces. Tras un arranque, lo que reconecta en la práctica es el respaldo.
 - Modo de escaneo de baja latencia, el único probado: la TV está enchufada y el escaneo solo dura mientras ningún mando marcado está conectado. En la prueba de la fase 2 se comprueba con `dumpsys bluetooth_manager` que el sistema lo mantiene en ese modo con la app cerrada y si el equilibrado también basta; si el sistema lo rebaja en segundo plano y deja de reconectar, se para y se revisa este cambio (la alternativa es un servicio en primer plano mientras se espera, que contradice "Sin proceso permanente").
 - Cada espera dura como mucho 10 minutos (elegido por el usuario): si en ese tiempo no se conecta ningún mando marcado, lo normal es que el mando no tenga pilas, y la persona puede abrir la app, que empieza otra espera de 10 minutos, o emparejarlo con la combinación de teclas. `Watcher.start()` guarda el final de la espera y `AdvertWatch` pone una alarma de `AlarmManager` a esa hora que vuelve a evaluar y para el escaneo. Así tampoco se llega a los 30 minutos tras los que Android pasa un escaneo a oportunista. Si el Bluetooth no está encendido al arrancar, la misma alarma vuelve a evaluar al cabo de 60 s dentro de la espera.
 - TCL retrasa el `BOOT_COMPLETED` de las apps de terceros unos 40 s ("tboost"); la espera empieza cuando llega (medido en la TV).
@@ -211,16 +213,14 @@ Sin cambios de contratos.
 
 ## Siguiente paso
 
-Fase 2 completada. En la TV, con el RC833 y la app cerrada, se reconectó solo y sin desvincularlo:
+Fase 2 completada. Tras añadir `ACCESS_BACKGROUND_LOCATION`, el RC833 se reconectó en tres reinicios seguidos con la app cerrada, siempre por el respaldo: la app recibió sus anuncios en segundo plano, lo desvinculó y lo volvió a vincular, y quedó conectado de 15 a 30 s después de empezar a escuchar. Antes de ese permiso, los escaneos de segundo plano no recibían anuncios y el mando solo se reconectaba si la TV lo conseguía sola o si se abría la app.
 
-- Tras reiniciar: el escaneo empezó unos 40 s después del arranque, por el retraso de TCL al `BOOT_COMPLETED`, y el mando se conectó en 6 s.
-- Al quitar y poner las pilas con la TV encendida: se conectó en 10 s.
+Otras comprobaciones en la TV:
 
-Con el mando sin pilas, la espera se paró sola a los 10 minutos. Al abrir la app volvió a esperar y el mando se conectó en 2 s. Tras desvincularlo a mano desde Ajustes, la app no volvió a vincularlo.
+- Quitar y poner las pilas con la TV encendida: se reconectó.
+- La espera se para a los 10 minutos.
+- Abrir la app vuelve a empezar la espera.
+- Un mando desvinculado a mano no se vuelve a vincular.
+- Desinstalar la sonda `dev.probe.bt` no influye: solo tenía una actividad, y con ella instalada los escaneos de segundo plano tampoco recibían anuncios.
 
-Queda sin probar en la TV:
-
-- El respaldo de desvincular y volver a vincular a los 10 s, porque la TV siempre conectó el mando antes.
-- El RC902, que no tiene pilas.
-
-Ejecuta `/openspec-apply-change` para implementar la Fase 3.
+El RC902 no se ha probado; la persona usará solo el RC833. Ejecuta `/openspec-apply-change` para implementar la Fase 3.

@@ -15,12 +15,21 @@ final class RemoteStatus {
         return RemoteState.NOT_BONDED;
     }
 
-    static List<Missing> missing(boolean locationPermission, boolean locationOn, boolean bluetoothOn) {
+    static List<Missing> missing(boolean locationPermission, boolean backgroundLocation, boolean locationOn,
+                                 boolean bluetoothOn) {
         List<Missing> missing = new ArrayList<>();
         if (!bluetoothOn) missing.add(Missing.BLUETOOTH_OFF);
         if (!locationPermission) missing.add(Missing.LOCATION_PERMISSION);
+        else if (!backgroundLocation) missing.add(Missing.BACKGROUND_LOCATION);
         if (!locationOn) missing.add(Missing.LOCATION_OFF);
         return missing;
+    }
+
+    static boolean canWatch(List<Missing> missing) {
+        for (Missing item : missing) {
+            if (item != Missing.BACKGROUND_LOCATION) return false;
+        }
+        return true;
     }
 
     static List<Remote> listed(List<Remote> bonded, Map<String, String> marked) {

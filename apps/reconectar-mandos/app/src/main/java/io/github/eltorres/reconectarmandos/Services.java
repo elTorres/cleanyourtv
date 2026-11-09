@@ -20,9 +20,9 @@ final class Services {
         store = new PrefsRemoteStore(context);
         this.bluetooth = bluetooth;
         watch = new AndroidAdvertWatch(context, bluetooth);
-        reconnector = new Reconnector(store, bluetooth, () -> Requirements.missing(context, bluetooth).isEmpty());
+        reconnector = new Reconnector(store, bluetooth, () -> Requirements.canWatch(context, bluetooth));
         watcher = new Watcher(store, bluetooth, watch,
-                () -> Requirements.missing(context, bluetooth).isEmpty(), System::currentTimeMillis);
+                () -> Requirements.canWatch(context, bluetooth), System::currentTimeMillis);
     }
 
     static void with(Context context, Consumer<Services> ready) {

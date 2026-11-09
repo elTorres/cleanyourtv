@@ -1,6 +1,8 @@
 package io.github.eltorres.reconectarmandos;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -39,13 +41,25 @@ public class RemoteStatusTest {
 
     @Test
     public void locationOffIsReported() {
-        assertEquals(List.of(Missing.LOCATION_OFF), RemoteStatus.missing(true, false, true));
+        assertEquals(List.of(Missing.LOCATION_OFF), RemoteStatus.missing(true, true, false, true));
+    }
+
+    @Test
+    public void backgroundLocationIsAskedOnceLocationIsAllowed() {
+        assertEquals(List.of(Missing.BACKGROUND_LOCATION), RemoteStatus.missing(true, false, true, true));
+        assertEquals(List.of(Missing.LOCATION_PERMISSION), RemoteStatus.missing(false, false, true, true));
+    }
+
+    @Test
+    public void missingBackgroundLocationStillAllowsWatching() {
+        assertTrue(RemoteStatus.canWatch(List.of(Missing.BACKGROUND_LOCATION)));
+        assertFalse(RemoteStatus.canWatch(List.of(Missing.BACKGROUND_LOCATION, Missing.LOCATION_OFF)));
     }
 
     @Test
     public void everyMissingRequirementIsReported() {
         assertEquals(List.of(Missing.BLUETOOTH_OFF, Missing.LOCATION_PERMISSION, Missing.LOCATION_OFF),
-                RemoteStatus.missing(false, false, false));
+                RemoteStatus.missing(false, false, false, false));
     }
 
     @Test

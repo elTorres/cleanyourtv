@@ -14,6 +14,7 @@
     <string name="last_attempt_failed">Reconnection failed at %1$s: %2$s</string>
     <string name="missing_title">Before it can watch for your remotes</string>
     <string name="missing_location_permission">Allow location: Android only shows Bluetooth devices to an app that may use location. The app never reads where the TV is.</string>
+    <string name="missing_background_location">Allow location all the time: without it Android hides the remotes from the app while it listens with this screen closed, for example right after the TV starts. If the button does not offer it, run adb shell pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_BACKGROUND_LOCATION.</string>
     <string name="missing_location_off">Turn on location in Settings &gt; Privacy &gt; Location.</string>
     <string name="missing_bluetooth_off">Turn on Bluetooth in Settings &gt; Remotes &amp; Accessories.</string>
     <string name="reconnect_channel">Reconnecting remotes</string>

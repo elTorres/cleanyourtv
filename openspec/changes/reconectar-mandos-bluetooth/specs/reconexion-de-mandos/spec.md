@@ -1,6 +1,6 @@
 ## Purpose
 
-Que los mandos Bluetooth que la TV deja de reconocer tras cada apagado (los que entregan una clave de privacidad de ejemplo y se anuncian con su dirección pública, como el BT_RC833_U1 y el TCL_RC902V_M1 en la TCL C725) vuelvan a funcionar por Bluetooth en cuanto la persona los usa, sin repetir la combinación de emparejamiento. Con un escaneo activo la propia TV los vuelve a conectar (probado en la TCL C725 el 2026-11-09); desvincular y volver a vincular queda como respaldo.
+Que los mandos Bluetooth que la TV deja de reconocer tras cada apagado (los que entregan una clave de privacidad de ejemplo y se anuncian con su dirección pública, como el BT_RC833_U1 y el TCL_RC902V_M1 en la TCL C725) vuelvan a funcionar por Bluetooth en cuanto la persona los usa, sin repetir la combinación de emparejamiento. Con un escaneo activo la propia TV a veces los vuelve a conectar; si no, la app los desvincula y los vuelve a vincular (probado en la TCL C725 el 2026-11-09).
 
 ## ADDED Requirements
 
@@ -14,10 +14,10 @@ El sistema SHALL actuar solo sobre los mandos que la persona haya marcado en la 
 - Given un mando vinculado que la persona no ha marcado, when se desconecta, then la app no lo desvincula ni lo vuelve a vincular
 
 ### Requirement: Reconexión al usar el mando
-El sistema SHALL, mientras espera, mantener la TV escuchando los anuncios de los mandos marcados para que la propia TV conecte el mando en cuanto la persona pulse una tecla, sin desvincularlo ni pedir la combinación de emparejamiento.
+El sistema SHALL, mientras espera, mantener la TV escuchando los anuncios de los mandos marcados para que el mando quede conectado poco después de que la persona pulse una tecla, sin pedir la combinación de emparejamiento.
 
 #### Scenario: Primera pulsación tras encender
-- Given la TV recién encendida con el RC833 marcado, vinculado y sin conexión y la app cerrada, when la persona pulsa una tecla del RC833, then en unos segundos el mando queda conectado y responde por Bluetooth sin que la app lo haya desvinculado
+- Given la TV recién encendida con el RC833 marcado, vinculado y sin conexión y la app cerrada, when la persona pulsa una tecla del RC833, then en menos de 30 s el mando queda conectado y responde por Bluetooth
 
 #### Scenario: Mando sin usar
 - Given un mando marcado y sin conexión que nadie pulsa, when pasa el tiempo, then la app no lo desvincula
@@ -74,7 +74,10 @@ El sistema SHALL mostrar en su pantalla, para cada mando marcado, si está conec
 - Given el RC902 se reconectó a las 18:41, when la persona abre la app, then ve el RC902 como conectado con la reconexión de las 18:41 correcta, aunque la pantalla estuviera cerrada al reconectarse
 
 ### Requirement: Requisitos que faltan
-El sistema SHALL indicar en su pantalla qué le impide esperar a los mandos (permiso de ubicación sin conceder, ubicación desactivada o Bluetooth apagado) y cómo resolverlo, y SHALL no desvincular ningún mando mientras falte alguno.
+El sistema SHALL indicar en su pantalla qué le impide esperar a los mandos (permiso de ubicación sin conceder, ubicación desactivada o Bluetooth apagado) y cómo resolverlo, y SHALL no desvincular ningún mando mientras falte alguno. El sistema SHALL indicar también si falta el permiso de ubicación todo el tiempo, sin el que solo puede reconectar con la pantalla abierta.
+
+#### Scenario: Ubicación solo con la app abierta
+- Given el permiso de ubicación concedido solo mientras se usa la app, when la persona abre la app, then la pantalla pide permitir la ubicación todo el tiempo y explica que sin ella no reconecta tras encender la TV con la app cerrada
 
 #### Scenario: Ubicación desactivada
 - Given la ubicación de la TV desactivada, when la persona abre la app, then la pantalla explica que hace falta activarla para detectar los mandos, no se escucha ningún anuncio y no se desvincula ninguno

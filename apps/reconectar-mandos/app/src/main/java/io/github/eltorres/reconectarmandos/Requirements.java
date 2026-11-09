@@ -14,7 +14,20 @@ final class Requirements {
     }
 
     static List<Missing> missing(Context context, BluetoothPort bluetooth) {
-        return RemoteStatus.missing(hasScanPermissions(context), locationOn(context), bluetooth.enabled());
+        return RemoteStatus.missing(hasScanPermissions(context), hasBackgroundLocation(context), locationOn(context),
+                bluetooth.enabled());
+    }
+
+    static boolean canWatch(Context context, BluetoothPort bluetooth) {
+        return RemoteStatus.canWatch(missing(context, bluetooth));
+    }
+
+    static String[] permissionsToRequest(List<Missing> missing) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !missing.contains(Missing.LOCATION_PERMISSION)
+                && missing.contains(Missing.BACKGROUND_LOCATION)) {
+            return new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+        }
+        return scanPermissions();
     }
 
     static String[] scanPermissions() {
@@ -30,6 +43,12 @@ final class Requirements {
             if (context.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) return false;
         }
         return true;
+    }
+
+    private static boolean hasBackgroundLocation(Context context) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                || context.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private static boolean locationOn(Context context) {

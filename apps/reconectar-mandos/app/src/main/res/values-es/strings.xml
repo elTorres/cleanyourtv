@@ -14,6 +14,7 @@
     <string name="last_attempt_failed">La reconexión falló a las %1$s: %2$s</string>
     <string name="missing_title">Antes de poder esperar a tus mandos</string>
     <string name="missing_location_permission">Permite la ubicación: Android solo muestra los dispositivos Bluetooth a una app que puede usar la ubicación. La app nunca lee dónde está la TV.</string>
+    <string name="missing_background_location">Permite la ubicación todo el tiempo: sin ella Android oculta los mandos a la app mientras escucha con esta pantalla cerrada, por ejemplo nada más encender la TV. Si el botón no lo ofrece, ejecuta adb shell pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_BACKGROUND_LOCATION.</string>
     <string name="missing_location_off">Activa la ubicación en Ajustes &gt; Privacidad &gt; Ubicación.</string>
     <string name="missing_bluetooth_off">Activa el Bluetooth en Ajustes &gt; Mandos y accesorios.</string>
     <string name="reconnect_channel">Reconexión de mandos</string>

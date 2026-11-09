@@ -50,7 +50,8 @@ public final class MainActivity extends Activity {
         allowLocation = findViewById(R.id.allow_location);
         empty = findViewById(R.id.empty);
         remotes = findViewById(R.id.remotes);
-        allowLocation.setOnClickListener(v -> requestPermissions(Requirements.scanPermissions(), PERMISSION_REQUEST));
+        allowLocation.setOnClickListener(v -> requestPermissions(
+                Requirements.permissionsToRequest(Requirements.missing(this, services.bluetooth)), PERMISSION_REQUEST));
     }
 
     @Override
@@ -98,7 +99,9 @@ public final class MainActivity extends Activity {
         List<String> lines = new ArrayList<>();
         for (Missing item : missing) lines.add(getString(missingText(item)));
         missingText.setText(String.join("\n", lines));
-        allowLocation.setVisibility(missing.contains(Missing.LOCATION_PERMISSION) ? View.VISIBLE : View.GONE);
+        boolean permissionMissing = missing.contains(Missing.LOCATION_PERMISSION)
+                || missing.contains(Missing.BACKGROUND_LOCATION);
+        allowLocation.setVisibility(permissionMissing ? View.VISIBLE : View.GONE);
     }
 
     private void rebuildRowsIfChanged(List<Remote> listed, Map<String, String> marked) {
@@ -161,6 +164,8 @@ public final class MainActivity extends Activity {
                 return R.string.missing_bluetooth_off;
             case LOCATION_PERMISSION:
                 return R.string.missing_location_permission;
+            case BACKGROUND_LOCATION:
+                return R.string.missing_background_location;
             default:
                 return R.string.missing_location_off;
         }
