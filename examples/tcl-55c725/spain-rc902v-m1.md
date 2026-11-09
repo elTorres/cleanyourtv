@@ -205,3 +205,43 @@ Alternativas:
 
 Actualizar el firmware del mando tampoco es una opción. TCL solo actualiza sus mandos originales, a través de
 `com.tcl.tcl_bt_rcu_service`, y forzar un firmware de TCL en una réplica podría inutilizarla.
+
+### App Reconectar mandos
+
+El mando no deja de intentarlo: tras el apagado sigue enviando anuncios dirigidos a la TV cada vez que se pulsa una
+tecla. Si en ese momento se desvincula y se vuelve a vincular por su dirección, el mando acepta el emparejamiento sin
+la combinación de teclas y la TV lo conecta en unos segundos. Se comprobó a mano con los dos mandos el 2026-11-09.
+La app de este fork, en [`apps/reconectar-mandos/`](../../apps/reconectar-mandos/), lo automatiza.
+
+Por ahora la app muestra los mandos Bluetooth vinculados, deja marcar los que hay que reconectar, enseña si cada uno
+está conectado y, con la pantalla abierta, a qué hora vio su último anuncio. Todavía no los reconecta sola.
+
+**Compilar e instalar.** Hace falta el JDK 17 o posterior y el SDK de Android (`sdk.dir` en
+`apps/reconectar-mandos/local.properties`, que git ignora). Desde la raíz del repositorio:
+
+```bash
+(cd apps/reconectar-mandos && ./gradlew --no-daemon assembleRelease)
+TV_HOST=<ip> tools/venv/bin/python -I tools/b64push.py \
+  apps/reconectar-mandos/app/build/outputs/apk/release/app-release.apk /data/local/tmp/rm.apk
+TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm install -r /data/local/tmp/rm.apk; rm -f /data/local/tmp/rm.apk'
+```
+
+**Permisos que hay que dar una vez.**
+
+- Ubicación: Android 11 solo entrega los anuncios Bluetooth a una app con permiso de ubicación, y además la
+  ubicación de la TV tiene que estar activada. La app lo pide con el botón *Permitir ubicación*; también se puede dar
+  por ADB:
+
+  ```bash
+  TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_COARSE_LOCATION; pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_FINE_LOCATION'
+  ```
+
+- Arranque en segundo plano: el firmware de TCL no deja arrancar apps al encender sin `APP_AUTO_START`. La app no
+  puede comprobarlo, así que conviene darlo al instalar:
+
+  ```bash
+  TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'appops set io.github.eltorres.reconectarmandos APP_AUTO_START allow; appops write-settings'
+  ```
+
+**Uso.** Abre *Reconectar mandos* desde la lista de apps y pulsa OK sobre cada mando que deba reconectarse: queda
+marcado con ✓. La app nunca toca un mando sin marcar. No pide acceso a Internet.
