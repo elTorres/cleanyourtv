@@ -225,5 +225,12 @@ starting.
   the launcher. The launcher's base64 transfer passed its md5 check here, unlike on the 43C645.
 - **Screenshots** come back empty while Live TV or HDMI is on screen; check `dumpsys activity activities | grep
   mResumedActivity`.
+- **Some Bluetooth remotes reconnect only by pairing again.** On a Spanish unit, `TCL_RC902V_M1` and
+  `BT_RC833_U1` work only over IR after every power-off, while `TCL_RC802V_MA` reconnects. The remote's dummy
+  IRK and this stack's privacy mode are the cause, not the debloat: see
+  [TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#a-bluetooth-remote-works-only-over-ir-after-every-power-off-tcl-android-11)
+  and [`spain-rc902v-m1.md`](spain-rc902v-m1.md#mando-bluetooth-no-se-reconecta-tras-apagar-la-tv). This fork's
+  [Reconectar mandos](spain-rc902v-m1.md#app-reconectar-mandos) app pairs such a remote again when a key is
+  pressed after power-on, without the button combination.
 - `dumpsys window policy` lists global keys for packages this TV does not have (`com.android.tv`,
   `com.realtek.tv.*`); none of them is the stock launcher's app keys.

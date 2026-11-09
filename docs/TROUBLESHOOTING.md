@@ -1692,6 +1692,55 @@ Workaround: press **Right** on the Pair screen first, then OK. Or switch the hel
 afterwards (note what `tools/tv.py 'settings get secure enabled_accessibility_services'` prints first, and put
 that value back with `settings put`).
 
+## A Bluetooth remote works only over IR after every power-off (TCL Android 11)
+
+**Seen on:** a TCL C725 (model "Smart TV Pro", `BeyondTV4`/`G03_4K_GB`, Android TV 11, `RP1A.200622.001`) with
+the remotes `TCL_RC902V_M1` and `BT_RC833_U1`, checked on 2026-11-09. The `TCL_RC802V_MA` on the same set
+reconnects after every power-on.
+
+The remote pairs, from TV Settings or with TCL's button combination, and works until the TV is switched off.
+After the next power-on it works only over infrared, and Remotes & Accessories lists it as disconnected. Pairing
+it again brings Bluetooth back until the next power-off. Its address starts with `00:00:00` and never changes. The
+debloat is not the cause: it happened before the list was applied, and `com.tcl.tcl_bt_rcu_service`,
+`com.tcl.autopair` and `com.google.android.tv.remote.service` all stay enabled.
+
+The HCI trace shows where it fails:
+
+- **While pairing,** the remote declines Secure Connections and pairs with legacy Just Works. It then hands over
+  a *public* identity address `00:00:00:xx:xx:xx` and the IRK `000102030405060708090a0b0c0d0e0f`, the sample
+  key from development kits, not a key of its own.
+- **At boot,** the stack adds the remote to the controller's resolving list with that IRK, switches address
+  resolution on, adds it to the accept list and starts a background `LE Create Connection`.
+- **When a button is pressed,** the remote sends `ADV_DIRECT_IND` to the TV from its public address: 710 of
+  them in about 10 s. The controller never completes a connection.
+
+Why: by default, a peer in the resolving list with a non-zero IRK is in *network privacy mode*, so the
+controller accepts only resolvable private addresses from it and drops packets sent from its identity address.
+The host would have to switch the device to *device privacy mode* (`LE Set Privacy Mode`), and this stack never
+sends that command. Pairing again works because that connection is made before the IRK is in the resolving
+list, so it lasts until the link drops. Why the RC802V gets through was not established.
+
+No TV setting fixes it: the IRK is in the remote's firmware, and no shell setting changes the privacy mode on
+this build. A small app that pairs the remote again when a key is pressed after power-on is described in
+[this TV's note](../examples/tcl-55c725/spain-rc902v-m1.md#app-reconectar-mandos). Without it:
+
+- Use it as an IR remote, and unpair it so it no longer shows as disconnected. The microphone needs Bluetooth.
+- Pair it again whenever you need voice.
+- Use a remote that reconnects on this set, as the RC802V did.
+
+**Seeing it without root.** `tools/tv.py 'dumpsys bluetooth_manager' > bt.txt` ends with a
+`BTSNOOP_LOG_SUMMARY` block: a compressed ring of the latest HCI packets (btsnooz format). AOSP's `btsnooz.py`,
+in the Bluetooth module's `system/tools/scripts/`, turns it into a btsnoop file that Wireshark opens. In it, look for:
+
+- the SMP Identity Information and Identity Address Information the remote sends while pairing;
+- `LE Add Device To Resolving List` with the peer IRK at boot;
+- the remote's advertising reports.
+
+While the stack only waits for the remote, the controller passes no advertising up to the host. Open the
+Pair accessory screen (`am start -n com.android.tv.settings/.accessories.AddAccessoryActivity`) and press
+ordinary buttons on the remote, not the pairing combination. Dump straight away, because advertising fills the
+ring quickly.
+
 ## App buttons crash the TV's own key service on a set with a second user (Skyworth/Coocaa)
 
 **Seen on:** a Coocaa Y74 Pro 65" that reports Skyworth `SWTV-24AE-4K`, product `SW10_TG`, device `eleonas`

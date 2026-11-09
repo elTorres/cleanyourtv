@@ -192,16 +192,32 @@ pasaba antes de aplicar CleanYourTV y no pasaba con el mando original.
   El mando nunca responde: después solo aparecen consultas de `getConnectionState`.
 - Emparejarlo desde cero (*Desvincular*, quitar las pilas 30 segundos y emparejar otra vez) no lo arregla.
 
-**Conclusión.** Lo más probable es que sea un defecto de este mando, que no es original. Una dirección que empieza
-por `00:00:00` no es una dirección de fabricante válida: el mando entrega una identidad falsa al emparejarse y
-luego se anuncia con otra, así que la TV no lo encuentra al reconectar. Desde la TV no tiene arreglo.
+**Traza HCI (2026-11-09).** Se sacó del bloque `BTSNOOP_LOG_SUMMARY` de `dumpsys bluetooth_manager`, sin root;
+el método está en
+[TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#a-bluetooth-remote-works-only-over-ir-after-every-power-off-tcl-android-11).
+Corrige la hipótesis anterior: el mando no cambia de dirección.
 
-Alternativas:
+- Al emparejarse, el mando rechaza Secure Connections y entrega como identidad su dirección *pública*
+  `00:00:00:xx:xx:xx` y la IRK `000102030405060708090a0b0c0d0e0f`, la clave de ejemplo de los kits de
+  desarrollo.
+- Al encender, la TV lo añade a la lista de resolución con esa IRK y a la lista de aceptación, y espera la
+  reconexión.
+- Al pulsar botones, el mando envía anuncios dirigidos a la TV (`ADV_DIRECT_IND`) desde esa misma dirección
+  pública: 710 en unos 10 segundos. La controladora nunca llega a conectar.
 
-- Usarlo por infrarrojos: los botones remapeados llegan con el mismo keycode. El micrófono no funciona por
-  infrarrojos.
+**Conclusión.** Con una IRK distinta de cero, la controladora aplica el modo de privacidad de red y descarta los
+paquetes que llegan desde la dirección de identidad. La TV tendría que pasar ese mando al modo de privacidad de
+dispositivo (`LE Set Privacy Mode`), y este Android 11 no lo hace nunca. Al emparejar de nuevo funciona porque esa
+conexión se abre antes de cargar la IRK. Con el `BT_RC833_U1` pasa lo mismo (misma dirección `00:00:00` y mismo
+síntoma); el `TCL_RC802V_MA` sí reconecta. Ningún ajuste de la TV lo arregla; lo que funciona es la app
+[Reconectar mandos](#app-reconectar-mandos), que lo vuelve a conectar al pulsar una tecla.
+
+Sin la app:
+
+- Usarlo por infrarrojos: los botones remapeados llegan con el mismo keycode. Desvincúlalo para que no aparezca
+  como desconectado. El micrófono no funciona por infrarrojos.
 - Volver a emparejarlo cuando haga falta la voz.
-- Cambiarlo por un TCL RC902V original.
+- Cambiarlo por un mando que reconecte en esta TV, como el `TCL_RC802V_MA`.
 
 Actualizar el firmware del mando tampoco es una opción. TCL solo actualiza sus mandos originales, a través de
 `com.tcl.tcl_bt_rcu_service`, y forzar un firmware de TCL en una réplica podría inutilizarla.
@@ -213,8 +229,27 @@ tecla. Si en ese momento se desvincula y se vuelve a vincular por su dirección,
 la combinación de teclas y la TV lo conecta en unos segundos. Se comprobó a mano con los dos mandos el 2026-11-09.
 La app de este fork, en [`apps/reconectar-mandos/`](../../apps/reconectar-mandos/), lo automatiza.
 
-Por ahora la app muestra los mandos Bluetooth vinculados, deja marcar los que hay que reconectar, enseña si cada uno
-está conectado y, con la pantalla abierta, a qué hora vio su último anuncio. Todavía no los reconecta sola.
+**Cómo funciona.**
+
+- **Cuándo escucha:** al encender la TV, cuando se desconecta un mando marcado y al abrir la app, siempre que no haya
+  ya un mando marcado conectado. Escucha con un escaneo Bluetooth que mantiene el propio sistema, sin servicio ni
+  notificación. TCL retrasa unos 40 s el aviso de arranque a las apps, así que la escucha empieza poco después de ver
+  la pantalla de inicio.
+- **Si la TV lo conecta sola:** con el escaneo en marcha, la controladora a veces capta el anuncio y la TV conecta el
+  mando por su cuenta, sin desvincularlo. Pasó al quitar y poner las pilas y al abrir la app, pero no en los
+  arranques.
+- **Respaldo:** si el mando sigue anunciándose 10 s sin conectarse, la app lo desvincula y lo vuelve a vincular.
+  Durante unos segundos muestra una notificación de "Reconectando un mando". Si la vinculación falla, la repite con
+  la siguiente pulsación. En tres reinicios seguidos, el RC833 quedó conectado de 15 a 30 s después de empezar a
+  escuchar, con la app cerrada.
+- **Cuándo deja de escuchar:** en cuanto cualquiera de los mandos marcados está conectado, o a los 10 minutos.
+  Si pasado ese tiempo no se ha conectado, lo normal es que el mando no tenga pilas: pónselas y abre la app, que
+  vuelve a escuchar otros 10 minutos, o vuelve a emparejarlo con su combinación de teclas.
+- **Si lo desvinculas tú desde Ajustes:** la app no lo vuelve a vincular. Solo vuelve a vincular los mandos que ha
+  desvinculado ella.
+
+La pantalla muestra, para cada mando marcado, si está conectado, la hora de su último anuncio y el resultado de la
+última reconexión.
 
 **Compilar e instalar.** Hace falta el JDK 17 o posterior y el SDK de Android (`sdk.dir` en
 `apps/reconectar-mandos/local.properties`, que git ignora). Desde la raíz del repositorio:
@@ -228,12 +263,13 @@ TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm install -r /data/local/tmp
 
 **Permisos que hay que dar una vez.**
 
-- Ubicación: Android 11 solo entrega los anuncios Bluetooth a una app con permiso de ubicación, y además la
-  ubicación de la TV tiene que estar activada. La app lo pide con el botón *Permitir ubicación*; también se puede dar
-  por ADB:
+- Ubicación, también en segundo plano: Android 11 solo entrega los anuncios Bluetooth a una app con permiso de
+  ubicación, y además la ubicación de la TV tiene que estar activada. Si el permiso es solo "mientras se usa la app",
+  el escaneo que empieza al encender la TV no recibe nada y el mando solo se reconecta con la app abierta. La app
+  pide los dos permisos con el botón *Permitir ubicación*. El de segundo plano se da más fácil por ADB:
 
   ```bash
-  TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_COARSE_LOCATION; pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_FINE_LOCATION'
+  TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_COARSE_LOCATION; pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_FINE_LOCATION; pm grant io.github.eltorres.reconectarmandos android.permission.ACCESS_BACKGROUND_LOCATION'
   ```
 
 - Arranque en segundo plano: el firmware de TCL no deja arrancar apps al encender sin `APP_AUTO_START`. La app no
@@ -244,4 +280,5 @@ TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm install -r /data/local/tmp
   ```
 
 **Uso.** Abre *Reconectar mandos* desde la lista de apps y pulsa OK sobre cada mando que deba reconectarse: queda
-marcado con ✓. La app nunca toca un mando sin marcar. No pide acceso a Internet.
+marcado con ✓. A partir de ahí no hace falta volver a abrirla: tras encender la TV, pulsa teclas del mando unos
+segundos hasta que responda por Bluetooth. La app nunca toca un mando sin marcar. No pide acceso a Internet.

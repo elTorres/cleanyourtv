@@ -16,7 +16,7 @@ implemented_by:
     name: "Claude Opus"
     version: "5.5"
     reasoning_effort: "low"
-last_implementation_at: "2026-11-09T19:05:13Z"
+last_implementation_at: "2026-11-09T19:35:58Z"
 ---
 
 # Reconectar mandos Bluetooth
@@ -206,21 +206,11 @@ Sin cambios de contratos.
 
 - Sin pruebas: el cambio es solo documentación.
 
-- [ ] Completa el apartado de la app en `examples/tcl-55c725/spain-rc902v-m1.md` con el funcionamiento automático (que el escaneo es lo que permite a la TV reconectar el mando, cuándo escanea, que para con el primer mando conectado o a los 10 minutos, que abrir la app vuelve a esperar, el respaldo a los 10 s, qué pasa si se desvincula a mano) y cambia su conclusión "Desde la TV no tiene arreglo" para enlazar ese apartado.
-- [ ] Añade a `examples/tcl-55c725/README.md`, en la línea sobre los mandos Bluetooth de *Firmware quirks*, la mención de la app con enlace al apartado de la nota.
-- [ ] Sustituye en `docs/TROUBLESHOOTING.md` la frase "Nothing on the TV fixes it" por un enlace al apartado de la nota, sin repetir su contenido, y añade a la tabla de diferencias de `FORK.md` una fila de la app que enlaza a la nota.
-- [ ] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
+- [x] Completa el apartado de la app en `examples/tcl-55c725/spain-rc902v-m1.md` con el funcionamiento automático (que el escaneo es lo que permite a la TV reconectar el mando, cuándo escanea, que para con el primer mando conectado o a los 10 minutos, que abrir la app vuelve a esperar, el respaldo a los 10 s, qué pasa si se desvincula a mano) y cambia su conclusión "Desde la TV no tiene arreglo" para enlazar ese apartado.
+- [x] Añade a `examples/tcl-55c725/README.md`, en la línea sobre los mandos Bluetooth de *Firmware quirks*, la mención de la app con enlace al apartado de la nota.
+- [x] Sustituye en `docs/TROUBLESHOOTING.md` la frase "Nothing on the TV fixes it" por un enlace al apartado de la nota, sin repetir su contenido, y añade a la tabla de diferencias de `FORK.md` una fila de la app que enlaza a la nota.
+- [x] Verifica los cambios en cuanto a comprobación de tipos, linting y pruebas utilizando el comando de verificación del proyecto. Busca el comando en el archivo AGENTS.md o en la configuración del proyecto. Corrige cualquier problema que aparezca.
 
 ## Siguiente paso
 
-Fase 2 completada. Tras añadir `ACCESS_BACKGROUND_LOCATION`, el RC833 se reconectó en tres reinicios seguidos con la app cerrada, siempre por el respaldo: la app recibió sus anuncios en segundo plano, lo desvinculó y lo volvió a vincular, y quedó conectado de 15 a 30 s después de empezar a escuchar. Antes de ese permiso, los escaneos de segundo plano no recibían anuncios y el mando solo se reconectaba si la TV lo conseguía sola o si se abría la app.
-
-Otras comprobaciones en la TV:
-
-- Quitar y poner las pilas con la TV encendida: se reconectó.
-- La espera se para a los 10 minutos.
-- Abrir la app vuelve a empezar la espera.
-- Un mando desvinculado a mano no se vuelve a vincular.
-- Desinstalar la sonda `dev.probe.bt` no influye: solo tenía una actividad, y con ella instalada los escaneos de segundo plano tampoco recibían anuncios.
-
-El RC902 no se ha probado; la persona usará solo el RC833. Ejecuta `/openspec-apply-change` para implementar la Fase 3.
+Las tres fases están completadas. La nota `examples/tcl-55c725/spain-rc902v-m1.md` documenta la app, y el `README.md` de la carpeta, `docs/TROUBLESHOOTING.md` y `FORK.md` enlazan a ella. Revisa el cambio y archívalo con `/openspec-archive-change`.
