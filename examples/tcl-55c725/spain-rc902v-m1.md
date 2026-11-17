@@ -235,6 +235,12 @@ La app de este fork, en [`apps/reconectar-mandos/`](../../apps/reconectar-mandos
   ya un mando marcado conectado. Escucha con un escaneo Bluetooth que mantiene el propio sistema, sin servicio ni
   notificación. TCL retrasa unos 40 s el aviso de arranque a las apps, así que la escucha empieza poco después de ver
   la pantalla de inicio.
+- **Encender no es siempre arrancar:** esta TV casi nunca arranca de cero; al encenderla con el mando sale de la
+  suspensión, y entonces Android no envía `BOOT_COMPLETED`. El Bluetooth sí se reinicia y deja el mando sin conectar.
+  Por eso la app atiende también `tcl.sys.intent.action.STR_RESUME_COMPLETED`, el aviso de TCL al reanudar, que llega
+  a las apps cerradas. Como el Bluetooth tarda unos segundos en volver, la app lo comprueba varias veces durante 30 s
+  y después cada minuto. Hasta el 2026-11-17 solo atendía el arranque, y el mando se quedaba desconectado tras cada
+  encendido normal.
 - **Si la TV lo conecta sola:** con el escaneo en marcha, la controladora a veces capta el anuncio y la TV conecta el
   mando por su cuenta, sin desvincularlo. Pasó al quitar y poner las pilas y al abrir la app, pero no en los
   arranques.

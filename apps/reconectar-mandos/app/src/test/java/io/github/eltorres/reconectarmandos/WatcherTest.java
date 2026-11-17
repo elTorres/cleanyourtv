@@ -28,6 +28,17 @@ public class WatcherTest {
     }
 
     @Test
+    public void watchStartsOnceBluetoothIsBackAfterStandby() {
+        ready = false;
+        watcher.start();
+        ready = true;
+        now = T + 10_000;
+        watcher.refresh();
+
+        assertEquals(List.of(WATCHING), watch.calls);
+    }
+
+    @Test
     public void watchStopsWhenAnyMarkedConnected() {
         watcher.start();
         bluetooth.connect(RC833);

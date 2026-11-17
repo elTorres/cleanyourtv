@@ -30,8 +30,12 @@ final class AndroidBluetooth implements BluetoothPort {
             return;
         }
         boolean requested = adapter.getProfileProxy(context.getApplicationContext(), new BluetoothProfile.ServiceListener() {
+            private boolean delivered;
+
             @Override
             public void onServiceConnected(int profile, BluetoothProfile proxy) {
+                if (delivered) return;
+                delivered = true;
                 ready.accept(new AndroidBluetooth(adapter, proxy));
             }
 
